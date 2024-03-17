@@ -29,8 +29,6 @@ public class App {
 //        binance(rates);
 //        bitstamp(rates, "bitstamp.csv");
         bitstamp(rates, "bitstamp 2023.csv");
-
-
     }
 
     private static void bitstamp(LinkedHashMap<LocalDate, NbpRecord> rates, String filename) throws CsvValidationException, IOException {
