@@ -1,31 +1,23 @@
 package com.dpod.plcryptotaxcalc.csv;
 
-import lombok.Data;
+import lombok.Getter;
 
-import java.util.function.BiConsumer;
-
-@Data
+@Getter
 public class BitstampCsvIndexes implements CsvIndexes {
 
-    int dateTime;
-    int fee;
-    int feeCurrency;
-    int currency;
-    int value;
-    int action;
+    private final int dateTime;
+    private final int fee;
+    private final int feeCurrency;
+    private final int currency;
+    private final int value;
+    private final int action;
 
     public BitstampCsvIndexes(String[] headerRow) {
-        setIndex("Fee currency", BitstampCsvIndexes::setFeeCurrency, headerRow);
-        setIndex("Fee", BitstampCsvIndexes::setFee, headerRow);
-        setIndex("Subtype", BitstampCsvIndexes::setAction, headerRow);
-        setIndex("Value currency", BitstampCsvIndexes::setCurrency, headerRow);
-        setIndex("Value", BitstampCsvIndexes::setValue, headerRow);
-        setIndex("Datetime", BitstampCsvIndexes::setDateTime, headerRow);
-    }
-
-    // todo is it possible to move to interface the method?
-    private void setIndex(String columnName, BiConsumer<BitstampCsvIndexes, Integer> setter, String[] headers) {
-        int index = findCsvIndex(headers, columnName);
-        setter.accept(this, index);
+        feeCurrency = findIndexByName("Fee currency", headerRow);
+        fee = findIndexByName("Fee", headerRow);
+        action = findIndexByName("Subtype", headerRow);
+        currency = findIndexByName("Value currency", headerRow);
+        value = findIndexByName("Value", headerRow);
+        dateTime = findIndexByName("Datetime", headerRow);
     }
 }

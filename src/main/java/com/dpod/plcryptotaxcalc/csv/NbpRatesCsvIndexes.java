@@ -1,24 +1,17 @@
 package com.dpod.plcryptotaxcalc.csv;
 
-import lombok.Data;
+import lombok.Getter;
 
-import java.util.function.BiConsumer;
-
-@Data
+@Getter
 public class NbpRatesCsvIndexes implements CsvIndexes {
 
-    int date;
-    int eur;
-    int usd;
+    private final int date;
+    private final int eur;
+    private final int usd;
 
     public NbpRatesCsvIndexes(String[] headerRow) {
-        setIndexFor("data", NbpRatesCsvIndexes::setDate, headerRow);
-        setIndexFor("1EUR", NbpRatesCsvIndexes::setEur, headerRow);
-        setIndexFor("1USD", NbpRatesCsvIndexes::setUsd, headerRow);
-    }
-
-    private void setIndexFor(String columnName, BiConsumer<NbpRatesCsvIndexes, Integer> setter, String[] headers) {
-        int index = findCsvIndex(headers, columnName);
-        setter.accept(this, index);
+        date = findIndexByName("data", headerRow);
+        eur = findIndexByName("1EUR", headerRow);
+        usd = findIndexByName("1USD", headerRow);
     }
 }

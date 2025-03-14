@@ -4,7 +4,7 @@ import java.util.stream.IntStream;
 
 public interface CsvIndexes {
 
-    default int findCsvIndex(String[] headerRow, String columnName) {
+    default int findIndexByName(String columnName, String[] headerRow) {
         return IntStream.rangeClosed(0, headerRow.length)
                 .filter(i -> columnName.equals(headerRow[i]))
                 .findFirst()
