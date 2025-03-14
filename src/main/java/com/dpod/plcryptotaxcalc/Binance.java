@@ -1,6 +1,5 @@
 package com.dpod.plcryptotaxcalc;
 
-import com.dpod.plcryptotaxcalc.csv.BitstampCsvIndexes;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
@@ -16,28 +15,25 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class Bitstamp {
+public class Binance {
 
-    static void bitstamp(NbpRates nbpRates, String filename)
-            throws CsvValidationException, IOException {
-
-        InputStream is = App.openFile(filename);
+    private static void binance(NbpRates nbpRates) throws IOException, CsvValidationException {
+        InputStream is = App.openFile("binance.csv");
+        List<String> records = new ArrayList<>();
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()
-                        .withSeparator(',')
+                        .withSeparator(';')
                         .build()).build();
 
-        String[] headers = csvReader.readNext();
-        BitstampCsvIndexes bitstampCsvIndexes = new BitstampCsvIndexes(headers);
 
         String[] values;
         List<LocalDateWrapper> dates = new ArrayList<>();
         while ((values = csvReader.readNext()) != null) {
             List<String> fields = Arrays.asList(values);
             LocalDateWrapper wrapper = new LocalDateWrapper();
-            String date = fields.get(bitstampCsvIndexes.getDateTime());
-            String pair = fields.get(bitstampCsvIndexes.getCurrency());
-            if (pair.endsWith("USD")) {
+            String date = fields.get(0);
+            String pair = fields.get(1);
+            if (pair.endsWith("USDT")) {
                 wrapper.isUSD = true;
             } else if (pair.endsWith("EUR")) {
                 wrapper.isUSD = false;
@@ -45,8 +41,9 @@ public class Bitstamp {
                 throw new IllegalStateException();
             }
 
-            String dateAsString = date.substring(0, 13);
-            wrapper.date = LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("MMM. dd, yyyy"));
+            String dateAsString = date.substring(0, 10);
+            records.add(dateAsString);
+            wrapper.date = LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             dates.add(wrapper);
         }
         dates.stream()
