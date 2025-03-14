@@ -4,6 +4,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,34 +20,42 @@ import java.util.List;
 public class App {
     public static void main(String[] args) throws Exception {
         // take nbp quotes from https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/archiwum-tabela-a-csv-xls/
+        String currencyRatesFile = "archiwum_tab_a_2024.csv";
+        String transactionsFile = "TransactionsExport.csv";
+        int year = 2024;
+
         LinkedHashMap<LocalDate, NbpRecord> rates = readNbpRates(
-                "nbp_quotes_2023.csv",
-                2023);
+                currencyRatesFile,
+                year);
+
+        bitstamp(rates, transactionsFile);
 //        LinkedHashMap<LocalDate, NbpRecord> rates = readNbpRates("nbp_quotes_2021.csv");
 //        testRates(rates);
 //        revolut(rates);
 //        revolut2022(rates);
 //        binance(rates);
 //        bitstamp(rates, "bitstamp.csv");
-        bitstamp(rates, "bitstamp 2023.csv");
     }
 
-    private static void bitstamp(LinkedHashMap<LocalDate, NbpRecord> rates, String filename) throws CsvValidationException, IOException {
+    private static void bitstamp(LinkedHashMap<LocalDate, NbpRecord> rates, String filename)
+            throws CsvValidationException, IOException {
+
         InputStream is = openFile(filename);
-        List<String> records = new ArrayList<>();
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()
-                        .withSeparator(';')
+                        .withSeparator(',')
                         .build()).build();
 
+        String[] headers = csvReader.readNext();
+        BitstampCsvIndexes bitstampCsvIndexes = new BitstampCsvIndexes(headers);
 
         String[] values;
         List<LocalDateWrapper> dates = new ArrayList<>();
         while ((values = csvReader.readNext()) != null) {
             List<String> fields = Arrays.asList(values);
             LocalDateWrapper wrapper = new LocalDateWrapper();
-            String date = fields.get(0);
-            String pair = fields.get(1);
+            String date = fields.get(bitstampCsvIndexes.dateTime);
+            String pair = fields.get(bitstampCsvIndexes.currency);
             if (pair.endsWith("USD")) {
                 wrapper.isUSD = true;
             } else if (pair.endsWith("EUR")) {
@@ -56,7 +65,6 @@ public class App {
             }
 
             String dateAsString = date.substring(0, 13);
-            records.add(dateAsString);
             wrapper.date = LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("MMM. dd, yyyy"));
             dates.add(wrapper);
         }
@@ -208,29 +216,32 @@ public class App {
         return rates.get(previousDay);
     }
 
-    private static LinkedHashMap<LocalDate, NbpRecord> readNbpRates(String filename, int year) throws IOException, CsvValidationException {
+    private static LinkedHashMap<LocalDate, NbpRecord> readNbpRates(String filename, int year)
+            throws IOException, CsvValidationException {
+
         LinkedHashMap<LocalDate, NbpRecord> rates = new LinkedHashMap<>();
         prepopulateEmptyRates(rates, year);
 
         InputStream is = openFile(filename);
-        List<List<String>> records = new ArrayList<>();
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';')
                         .build()).build();
-
+        String[] headers = csvReader.readNext();
+        NbpRatesCsvIndexes nbpRatesCsvHeader = new NbpRatesCsvIndexes(headers);
 
         String[] values;
         while ((values = csvReader.readNext()) != null) {
             List<String> fields = Arrays.asList(values);
-            String date = fields.get(0);
-            if (date.contains("data")) {
+            String date = fields.get(nbpRatesCsvHeader.getDate());
+
+            // skip rows without date (e.g. with column information)
+            if (!StringUtils.isNumeric(date)) {
                 continue;
             }
 
-            NbpRecord nbpRecord = new NbpRecord(date, fields.get(1), fields.get(2));
+            NbpRecord nbpRecord = new NbpRecord(date, fields.get(nbpRatesCsvHeader.getUsd()), fields.get(nbpRatesCsvHeader.getEur()));
             rates.put(nbpRecord.date, nbpRecord);
-            records.add(fields);
         }
 
         return rates;
