@@ -1,4 +1,4 @@
-package com.dpod;
+package com.dpod.plcryptotaxcalc;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

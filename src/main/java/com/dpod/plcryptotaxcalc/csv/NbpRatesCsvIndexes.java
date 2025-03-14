@@ -1,4 +1,4 @@
-package com.dpod;
+package com.dpod.plcryptotaxcalc.csv;
 
 import lombok.Data;
 

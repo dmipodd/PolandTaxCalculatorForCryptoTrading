@@ -1,5 +1,7 @@
-package com.dpod;
+package com.dpod.plcryptotaxcalc;
 
+import com.dpod.plcryptotaxcalc.csv.BitstampCsvIndexes;
+import com.dpod.plcryptotaxcalc.csv.NbpRatesCsvIndexes;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
@@ -54,8 +56,8 @@ public class App {
         while ((values = csvReader.readNext()) != null) {
             List<String> fields = Arrays.asList(values);
             LocalDateWrapper wrapper = new LocalDateWrapper();
-            String date = fields.get(bitstampCsvIndexes.dateTime);
-            String pair = fields.get(bitstampCsvIndexes.currency);
+            String date = fields.get(bitstampCsvIndexes.getDateTime());
+            String pair = fields.get(bitstampCsvIndexes.getCurrency());
             if (pair.endsWith("USD")) {
                 wrapper.isUSD = true;
             } else if (pair.endsWith("EUR")) {
