@@ -1,6 +1,5 @@
 package com.dpod.plcryptotaxcalc;
 
-import com.dpod.plcryptotaxcalc.csv.BitstampCsvIndexes;
 import com.dpod.plcryptotaxcalc.csv.NbpRatesCsvIndexes;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
@@ -30,54 +29,13 @@ public class App {
                 currencyRatesFile,
                 year);
 
-        bitstamp(rates, transactionsFile);
+        Bitstamp.bitstamp(rates, transactionsFile);
 //        LinkedHashMap<LocalDate, NbpRecord> rates = readNbpRates("nbp_quotes_2021.csv");
 //        testRates(rates);
 //        revolut(rates);
 //        revolut2022(rates);
 //        binance(rates);
 //        bitstamp(rates, "bitstamp.csv");
-    }
-
-    private static void bitstamp(LinkedHashMap<LocalDate, NbpRecord> rates, String filename)
-            throws CsvValidationException, IOException {
-
-        InputStream is = openFile(filename);
-        CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
-                .withCSVParser(new CSVParserBuilder()
-                        .withSeparator(',')
-                        .build()).build();
-
-        String[] headers = csvReader.readNext();
-        BitstampCsvIndexes bitstampCsvIndexes = new BitstampCsvIndexes(headers);
-
-        String[] values;
-        List<LocalDateWrapper> dates = new ArrayList<>();
-        while ((values = csvReader.readNext()) != null) {
-            List<String> fields = Arrays.asList(values);
-            LocalDateWrapper wrapper = new LocalDateWrapper();
-            String date = fields.get(bitstampCsvIndexes.getDateTime());
-            String pair = fields.get(bitstampCsvIndexes.getCurrency());
-            if (pair.endsWith("USD")) {
-                wrapper.isUSD = true;
-            } else if (pair.endsWith("EUR")) {
-                wrapper.isUSD = false;
-            } else {
-                throw new IllegalStateException();
-            }
-
-            String dateAsString = date.substring(0, 13);
-            wrapper.date = LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("MMM. dd, yyyy"));
-            dates.add(wrapper);
-        }
-        dates.stream()
-                .map(localDate -> {
-                    NbpRecord nbpRecord = findPreviousNbpDateRate(rates, localDate.date);
-                    nbpRecord.isUSD = localDate.isUSD;
-                    return nbpRecord;
-                })
-                .map(nbpRecord -> nbpRecord.isUSD ? nbpRecord.usdRate : nbpRecord.eurRate)
-                .forEach(rate -> System.out.println(rate));
     }
 
     private static void binance(LinkedHashMap<LocalDate, NbpRecord> rates) throws IOException, CsvValidationException {
@@ -201,7 +159,7 @@ public class App {
         System.out.println(localDate + ": " + nbpRecord.usdRate);
     }
 
-    private static NbpRecord findPreviousNbpDateRate(LinkedHashMap<LocalDate, NbpRecord> rates, LocalDate test) {
+    static NbpRecord findPreviousNbpDateRate(LinkedHashMap<LocalDate, NbpRecord> rates, LocalDate test) {
         LocalDate previousDay = test.minusDays(1);
         NbpRecord nbpRecord = rates.get(previousDay);
         if (nbpRecord != NbpRecord.EMPTY) {
@@ -245,7 +203,7 @@ public class App {
         return rates;
     }
 
-    private static InputStream openFile(String filename) {
+    static InputStream openFile(String filename) {
         String nbpFilename =  filename;
         ClassLoader classloader = Thread.currentThread().getContextClassLoader();
         InputStream is = classloader.getResourceAsStream(nbpFilename);
