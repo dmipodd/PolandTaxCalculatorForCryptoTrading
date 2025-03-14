@@ -1,18 +1,6 @@
 package com.dpod.plcryptotaxcalc;
 
-import com.opencsv.CSVParserBuilder;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
-import com.opencsv.exceptions.CsvValidationException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class App {
     public static void main(String[] args) throws Exception {

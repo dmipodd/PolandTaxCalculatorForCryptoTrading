@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.dpod.plcryptotaxcalc.Utils.openFile;
+import static com.dpod.plcryptotaxcalc.Utils.inputStream;
 
 public class Revolut {
     private static void revolut(NbpRates nbpRates) throws IOException, CsvValidationException {
@@ -34,7 +34,7 @@ public class Revolut {
     }
 
     private static List<LocalDate> readDatesRevolut2022() throws IOException, CsvValidationException {
-        InputStream is = openFile("dates_revolut_2022.csv");
+        InputStream is = inputStream("dates_revolut_2022.csv");
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';')
@@ -53,7 +53,7 @@ public class Revolut {
     }
 
     static List<LocalDate> readDates() throws IOException, CsvValidationException {
-        InputStream is = openFile("dates_revolut.csv");
+        InputStream is = inputStream("dates_revolut.csv");
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';')

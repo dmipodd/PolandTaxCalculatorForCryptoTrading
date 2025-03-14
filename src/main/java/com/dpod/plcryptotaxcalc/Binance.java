@@ -12,15 +12,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-import static com.dpod.plcryptotaxcalc.Utils.openFile;
+import static com.dpod.plcryptotaxcalc.Utils.inputStream;
 
 public class Binance {
 
     private static void binance(NbpRates nbpRates) throws IOException, CsvValidationException {
-        InputStream is = openFile("binance.csv");
+        InputStream is = inputStream("binance.csv");
         List<String> records = new ArrayList<>();
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()

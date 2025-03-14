@@ -1,36 +1,31 @@
 package com.dpod.plcryptotaxcalc;
 
 import com.dpod.plcryptotaxcalc.csv.BitstampCsvIndexes;
-import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.dpod.plcryptotaxcalc.Utils.openFile;
+import static com.dpod.plcryptotaxcalc.Utils.createCsvReader;
 
 public class Bitstamp {
 
     static void bitstamp(NbpRates nbpRates, String filename)
             throws CsvValidationException, IOException {
 
-        InputStream is = openFile(filename);
-        CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
-                .withCSVParser(new CSVParserBuilder()
-                        .withSeparator(',')
-                        .build()).build();
+        try (CSVReader csvReader = createCsvReader(filename, ',')) {
+            String[] headers = csvReader.readNext();
+            BitstampCsvIndexes bitstampCsvIndexes = new BitstampCsvIndexes(headers);
+            calcTax(nbpRates, csvReader, bitstampCsvIndexes);
+        }
+    }
 
-        String[] headers = csvReader.readNext();
-        BitstampCsvIndexes bitstampCsvIndexes = new BitstampCsvIndexes(headers);
-
+    private static void calcTax(NbpRates nbpRates, CSVReader csvReader, BitstampCsvIndexes bitstampCsvIndexes) throws IOException, CsvValidationException {
         String[] values;
         List<LocalDateWrapper> dates = new ArrayList<>();
         while ((values = csvReader.readNext()) != null) {
