@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static com.dpod.plcryptotaxcalc.Utils.openFile;
+
 public class NbpRates {
 
     private final LinkedHashMap<LocalDate, NbpRecord> rates;
@@ -30,7 +32,7 @@ public class NbpRates {
         LinkedHashMap<LocalDate, NbpRecord> rates = new LinkedHashMap<>();
         prepopulateEmptyRates(rates, year);
 
-        InputStream is = App.openFile(filename);
+        InputStream is = openFile(filename);
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';')

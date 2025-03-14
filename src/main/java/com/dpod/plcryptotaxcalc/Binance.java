@@ -15,10 +15,12 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static com.dpod.plcryptotaxcalc.Utils.openFile;
+
 public class Binance {
 
     private static void binance(NbpRates nbpRates) throws IOException, CsvValidationException {
-        InputStream is = App.openFile("binance.csv");
+        InputStream is = openFile("binance.csv");
         List<String> records = new ArrayList<>();
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()

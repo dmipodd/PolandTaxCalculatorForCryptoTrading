@@ -13,15 +13,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
+
+import static com.dpod.plcryptotaxcalc.Utils.openFile;
 
 public class Bitstamp {
 
     static void bitstamp(NbpRates nbpRates, String filename)
             throws CsvValidationException, IOException {
 
-        InputStream is = App.openFile(filename);
+        InputStream is = openFile(filename);
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(',')
