@@ -137,7 +137,6 @@ public class App {
 
     private static List<LocalDate> readDatesRevolut2022() throws IOException, CsvValidationException {
         InputStream is = openFile("dates_revolut_2022.csv");
-        List<String> records = new ArrayList<>();
         CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(is))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';')
@@ -150,7 +149,6 @@ public class App {
             List<String> fields = Arrays.asList(values);
             String date = fields.get(0);
             String dateAsString = date.substring(0, 10);
-            records.add(dateAsString);
             dates.add(LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         }
         return dates;
