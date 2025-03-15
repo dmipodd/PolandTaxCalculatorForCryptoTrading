@@ -5,11 +5,12 @@ import java.time.LocalDate;
 public class App {
     public static void main(String[] args) throws Exception {
         // take nbp quotes from https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/archiwum-tabela-a-csv-xls/
-        String currencyRatesFile = "archiwum_tab_a_2024.csv";
+        String ratesFileYearBefore = "archiwum_tab_a_2023.csv";
+        String ratesFile = "archiwum_tab_a_2024.csv";
         String transactionsFile = "TransactionsExport.csv";
         int year = 2024;
 
-        NbpRates nbpRates = new NbpRates(currencyRatesFile, 2024);
+        NbpRates nbpRates = new NbpRates(ratesFileYearBefore, ratesFile, 2024);
         Bitstamp.bitstamp(nbpRates, transactionsFile);
 //        LinkedHashMap<LocalDate, NbpRecord> rates = readNbpRates("nbp_quotes_2021.csv");
 //        testRates(rates);

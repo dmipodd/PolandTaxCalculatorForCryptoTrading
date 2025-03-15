@@ -19,4 +19,11 @@ public class NbpRecord {
 
     public NbpRecord() {
     }
+
+    public String getRateFor(Currency currency) {
+        return switch (currency) {
+            case EUR -> eurRate;
+            case USD -> usdRate;
+        };
+    }
 }

@@ -6,9 +6,9 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.dpod.plcryptotaxcalc.Utils.createCsvReader;
@@ -20,7 +20,7 @@ public class Bitstamp {
 
         try (CSVReader csvReader = createCsvReader(filename, ',')) {
             String[] headers = csvReader.readNext();
-            BitstampCsvIndexes bitstampCsvIndexes = new BitstampCsvIndexes(headers);
+            var bitstampCsvIndexes = new BitstampCsvIndexes(headers);
             calcTax(nbpRates, csvReader, bitstampCsvIndexes);
         }
     }
@@ -29,21 +29,32 @@ public class Bitstamp {
         String[] values;
         List<LocalDateWrapper> dates = new ArrayList<>();
         while ((values = csvReader.readNext()) != null) {
-            List<String> fields = Arrays.asList(values);
-            LocalDateWrapper wrapper = new LocalDateWrapper();
-            String date = fields.get(bitstampCsvIndexes.getDateTime());
-            String pair = fields.get(bitstampCsvIndexes.getCurrency());
-            if (pair.endsWith("USD")) {
-                wrapper.isUSD = true;
-            } else if (pair.endsWith("EUR")) {
-                wrapper.isUSD = false;
-            } else {
-                throw new IllegalStateException();
-            }
 
-            String dateAsString = date.substring(0, 13);
-            wrapper.date = LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("MMM. dd, yyyy"));
-            dates.add(wrapper);
+            // 2024-01-02T11:52:53Z
+            String dateTime = values[bitstampCsvIndexes.getDateTime()];
+            ZonedDateTime utcZonedDateTime = ZonedDateTime.parse(dateTime);
+            ZonedDateTime warsawZonedDateTime = utcZonedDateTime.withZoneSameInstant(ZoneId.of("Europe/Warsaw"));
+            LocalDate localDate = warsawZonedDateTime.toLocalDate();
+
+            Currency currency = Currency.valueOf(values[bitstampCsvIndexes.getCurrency()]);
+            NbpRecord nbpRecord = nbpRates.findPreviousNbpDateRate(localDate);
+            nbpRecord.getRateFor(currency);
+
+//            List<String> fields = Arrays.asList(values);
+//            LocalDateWrapper wrapper = new LocalDateWrapper();
+//            String date = fields.get(bitstampCsvIndexes.getDateTime());
+//            String currency = fields.get(bitstampCsvIndexes.getCurrency());
+//            if (currency.endsWith("USD")) {
+//                wrapper.isUSD = true;
+//            } else if (currency.endsWith("EUR")) {
+//                wrapper.isUSD = false;
+//            } else {
+//                throw new IllegalStateException();
+//            }
+//
+//            String dateAsString = date.substring(0, 13);
+//            wrapper.date = LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("MMM. dd, yyyy"));
+//            dates.add(wrapper);
         }
         dates.stream()
                 .map(localDate -> {
