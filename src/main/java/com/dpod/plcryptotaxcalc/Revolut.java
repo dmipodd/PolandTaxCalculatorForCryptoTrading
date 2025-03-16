@@ -1,5 +1,6 @@
 package com.dpod.plcryptotaxcalc;
 
+import com.dpod.plcryptotaxcalc.nbp.NbpRates;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
@@ -20,16 +21,16 @@ public class Revolut {
     private static void revolut(NbpRates nbpRates) throws IOException, CsvValidationException {
         List<LocalDate> dates = readDates();
         dates.stream()
-                .map(localDate -> nbpRates.findPreviousNbpDateRate(localDate))
-                .map(nbpRecord -> nbpRecord.usdRate)
+                .map(localDate -> nbpRates.findRateForPreviousBusinessDay(localDate))
+                .map(nbpRecord -> nbpRecord.getUsdRate())
                 .forEach(usdRate -> System.out.println(usdRate));
     }
 
     private static void revolut2022(NbpRates nbpRates) throws IOException, CsvValidationException {
         List<LocalDate> dates = readDatesRevolut2022();
         dates.stream()
-                .map(localDate -> nbpRates.findPreviousNbpDateRate(localDate))
-                .map(nbpRecord -> nbpRecord.usdRate)
+                .map(localDate -> nbpRates.findRateForPreviousBusinessDay(localDate))
+                .map(nbpRecord -> nbpRecord.getUsdRate())
                 .forEach(usdRate -> System.out.println(usdRate));
     }
 

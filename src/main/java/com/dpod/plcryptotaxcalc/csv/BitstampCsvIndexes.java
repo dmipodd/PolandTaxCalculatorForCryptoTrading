@@ -1,23 +1,22 @@
 package com.dpod.plcryptotaxcalc.csv;
 
-import lombok.Getter;
+import static com.dpod.plcryptotaxcalc.csv.CsvIndexUtil.findIndexByName;
 
-@Getter
-public class BitstampCsvIndexes implements CsvIndexes {
-
-    private final int dateTime;
-    private final int fee;
-    private final int feeCurrency;
-    private final int currency;
-    private final int value;
-    private final int action;
+public record BitstampCsvIndexes(int dateTime,
+                                 int action,
+                                 int amount,
+                                 int currency,
+                                 int fee,
+                                 int feeCurrency) {
 
     public BitstampCsvIndexes(String[] headerRow) {
-        feeCurrency = findIndexByName("Fee currency", headerRow);
-        fee = findIndexByName("Fee", headerRow);
-        action = findIndexByName("Subtype", headerRow);
-        currency = findIndexByName("Value currency", headerRow);
-        value = findIndexByName("Value", headerRow);
-        dateTime = findIndexByName("Datetime", headerRow);
+        this(
+                findIndexByName("Datetime", headerRow),
+                findIndexByName("Subtype", headerRow),
+                findIndexByName("Value", headerRow),
+                findIndexByName("Value currency", headerRow),
+                findIndexByName("Fee", headerRow),
+                findIndexByName("Fee currency", headerRow)
+        );
     }
 }
