@@ -7,17 +7,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaxReport {
-
-    private List<Posting> postings;
-    private BigDecimal taxBase;
-    private BigDecimal tax;
-
-    public TaxReport(List<Posting> postings, BigDecimal taxBase, BigDecimal tax) {
-        this.postings = postings;
-        this.taxBase = taxBase;
-        this.tax = tax;
-    }
+public record TaxReport(
+        List<Posting> postings,
+        BigDecimal taxBase,
+        BigDecimal tax) {
 
     public List<String> toCsvRows() {
         List<String> rows = new ArrayList<>();

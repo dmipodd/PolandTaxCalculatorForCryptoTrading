@@ -20,7 +20,7 @@ public class App {
         var transactionsFile = "TransactionsExport.csv";
 
         NbpRates nbpRates = new NbpRates(nbpRatesFileYearBefore, nbpRatesFile, year);
-        List<Posting> postings = Bitstamp.generatePostingsFor(nbpRates, transactionsFile, year);
+        List<Posting> postings = BitstampTransactionProcessor.generatePostingsFor(nbpRates, transactionsFile);
         TaxReport taxReport = TaxCalculation.calculate(postings);
 
         writeTaxReportToCsv(taxReport, generateOutputFileName(year));

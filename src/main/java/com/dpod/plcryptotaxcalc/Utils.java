@@ -1,5 +1,6 @@
 package com.dpod.plcryptotaxcalc;
 
+import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
@@ -12,10 +13,11 @@ import java.io.InputStreamReader;
 public class Utils {
 
     public static CSVReader createCsvReader(String filename, char separator) {
+        CSVParser csvParser = new CSVParserBuilder()
+                .withSeparator(separator)
+                .build();
         return new CSVReaderBuilder(new InputStreamReader(inputStream(filename)))
-                .withCSVParser(new CSVParserBuilder()
-                        .withSeparator(separator)
-                        .build())
+                .withCSVParser(csvParser)
                 .build();
     }
 
