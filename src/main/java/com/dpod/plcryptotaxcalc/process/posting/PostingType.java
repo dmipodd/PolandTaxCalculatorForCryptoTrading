@@ -1,4 +1,4 @@
-package com.dpod.plcryptotaxcalc.report;
+package com.dpod.plcryptotaxcalc.process.posting;
 
 import java.util.Arrays;
 

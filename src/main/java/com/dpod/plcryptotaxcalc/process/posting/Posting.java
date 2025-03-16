@@ -1,7 +1,6 @@
-package com.dpod.plcryptotaxcalc.report;
+package com.dpod.plcryptotaxcalc.process.posting;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
 import java.math.BigDecimal;

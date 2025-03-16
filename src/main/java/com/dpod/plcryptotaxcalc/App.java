@@ -1,7 +1,10 @@
 package com.dpod.plcryptotaxcalc;
 
-import com.dpod.plcryptotaxcalc.nbp.NbpRates;
-import com.dpod.plcryptotaxcalc.report.Posting;
+import com.dpod.plcryptotaxcalc.process.nbp.NbpRates;
+import com.dpod.plcryptotaxcalc.process.posting.Posting;
+import com.dpod.plcryptotaxcalc.process.BitstampTransactionProcessor;
+import com.dpod.plcryptotaxcalc.process.tax.TaxCalculation;
+import com.dpod.plcryptotaxcalc.process.tax.TaxReport;
 
 import java.io.IOException;
 import java.nio.file.Files;

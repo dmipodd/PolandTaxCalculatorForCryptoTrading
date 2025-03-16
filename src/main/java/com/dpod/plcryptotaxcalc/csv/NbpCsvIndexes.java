@@ -1,6 +1,6 @@
 package com.dpod.plcryptotaxcalc.csv;
 
-import static com.dpod.plcryptotaxcalc.csv.CsvIndexUtil.findIndexByName;
+import static com.dpod.plcryptotaxcalc.csv.CsvUtils.findIndexByName;
 
 public record NbpCsvIndexes(int date, int eur, int usd) {
 

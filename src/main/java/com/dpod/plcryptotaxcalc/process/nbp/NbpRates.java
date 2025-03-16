@@ -1,4 +1,4 @@
-package com.dpod.plcryptotaxcalc.nbp;
+package com.dpod.plcryptotaxcalc.process.nbp;
 
 import com.dpod.plcryptotaxcalc.csv.NbpCsvIndexes;
 import com.dpod.plcryptotaxcalc.exception.NbpRatesLoadingException;
@@ -13,7 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static com.dpod.plcryptotaxcalc.Utils.createCsvReader;
+import static com.dpod.plcryptotaxcalc.csv.CsvUtils.createCsvReader;
 
 /**
  * Class encapsulates information about National Polish Bank average daily currency rates.

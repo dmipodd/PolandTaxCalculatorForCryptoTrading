@@ -1,11 +1,11 @@
-package com.dpod.plcryptotaxcalc;
+package com.dpod.plcryptotaxcalc.process;
 
 import com.dpod.plcryptotaxcalc.csv.BitstampCsvIndexes;
-import com.dpod.plcryptotaxcalc.nbp.NbpDailyRates;
-import com.dpod.plcryptotaxcalc.nbp.NbpRates;
-import com.dpod.plcryptotaxcalc.report.Currency;
-import com.dpod.plcryptotaxcalc.report.Posting;
-import com.dpod.plcryptotaxcalc.report.PostingType;
+import com.dpod.plcryptotaxcalc.process.nbp.NbpDailyRates;
+import com.dpod.plcryptotaxcalc.process.nbp.NbpRates;
+import com.dpod.plcryptotaxcalc.process.posting.Currency;
+import com.dpod.plcryptotaxcalc.process.posting.Posting;
+import com.dpod.plcryptotaxcalc.process.posting.PostingType;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.dpod.plcryptotaxcalc.Utils.createCsvReader;
+import static com.dpod.plcryptotaxcalc.csv.CsvUtils.createCsvReader;
 
 public class BitstampTransactionProcessor {
 
