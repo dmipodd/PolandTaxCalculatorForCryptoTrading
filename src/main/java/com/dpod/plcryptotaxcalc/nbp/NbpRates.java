@@ -1,112 +1,115 @@
 package com.dpod.plcryptotaxcalc.nbp;
 
 import com.dpod.plcryptotaxcalc.csv.NbpCsvIndexes;
+import com.dpod.plcryptotaxcalc.exception.NbpRatesLoadingException;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static com.dpod.plcryptotaxcalc.Utils.createCsvReader;
 
+/**
+ * Class encapsulates information about National Polish Bank average daily currency rates.
+ * Main purpose of the class is to find the previous business day preceding a trade day.
+ * The source of information is a pair of CSV files for a specified year and for previous year.
+ * We need only a small fraction of previous year data for January 2 corner case.
+ */
 public class NbpRates {
 
-    private final LinkedHashMap<LocalDate, NbpDailyRates> rates;
+    private static final DateTimeFormatter NBP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
+    private static final int PREVIOUS_YEAR_DECEMBER_DATE_TO_READ_FROM = 15;
 
-    public NbpRates(String ratesFileYearBefore, String currencyRatesFile, int year) throws CsvValidationException, IOException {
-        rates = readNbpRates(ratesFileYearBefore, currencyRatesFile, year);
+    private final LinkedHashMap<LocalDate, NbpDailyRates> rates;
+    private final int year;
+
+    public NbpRates(String ratesFileYearBefore, String currencyRatesFile, int year) {
+        this.year = year;
+        this.rates = readNbpRatesFromFiles(ratesFileYearBefore, currencyRatesFile);
     }
 
-    static LinkedHashMap<LocalDate, NbpDailyRates> readNbpRates(String ratesFileYearBefore, String filename, int year)
-            throws IOException, CsvValidationException {
+    /**
+     * Finds NBP rates from the closest business day preceding specified #date.<br />
+     * Examples:
+     * <ul>
+     *  <li>
+     *      you did a trade on March 12, 2025 that was Wednesday. Method will return March 11, 2025 that is Tuesday.
+     *  </li>
+     *  <li>
+     *      you did a trade on March 17, 2025 that was Monday. Method will return March 14, 2025 that is Friday because weekend is skipped.
+     *  </li>
+     *  <li>
+     *      you did a trade on January 2, 2024 that was Tuesday. Method will return December 29, 2023 that is Friday
+     *      because weekend is skipped and bank holiday January 1 is skipped as well.
+     *  </li>
+     * </ul>
+     */
+    public NbpDailyRates findRateForPreviousBusinessDay(LocalDate date) {
+        var previousDay = date;
+        NbpDailyRates dailyRates;
+        do {
+            previousDay = previousDay.minusDays(1);
+            dailyRates = rates.get(previousDay);
+        } while (dailyRates == null);
+        return dailyRates;
+    }
 
-        LinkedHashMap<LocalDate, NbpDailyRates> rates = new LinkedHashMap<>();
-        prepopulateEmptyRates(rates, year);
-
-        try (CSVReader csvReader = createCsvReader(filename, ';')) {
-            String[] headers = csvReader.readNext();
-            NbpCsvIndexes nbpCsvIndexes = new NbpCsvIndexes(headers);
-
-            String[] values;
-            while ((values = csvReader.readNext()) != null) {
-                List<String> fields = Arrays.asList(values);
-                String dateAsString = fields.get(nbpCsvIndexes.date());
-
-                // skip rows without date (e.g. with column information)
-                if (!StringUtils.isNumeric(dateAsString)) {
-                    continue;
-                }
-
-                LocalDate date = LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("yyyyMMdd"));
-                NbpDailyRates nbpDailyRates = new NbpDailyRates(date, fields.get(nbpCsvIndexes.usd()), fields.get(nbpCsvIndexes.eur()));
-                rates.put(nbpDailyRates.getDate(), nbpDailyRates);
-            }
-        }
-
-        try (CSVReader csvReader = createCsvReader(ratesFileYearBefore, ';')) {
-            String[] headers = csvReader.readNext();
-            NbpCsvIndexes nbpRatesCsvHeader = new NbpCsvIndexes(headers);
-
-            String[] values;
-            while ((values = csvReader.readNext()) != null) {
-                List<String> fields = Arrays.asList(values);
-                String date = fields.get(nbpRatesCsvHeader.date());
-
-                // skip rows without date (e.g. with column information)
-                if (!StringUtils.isNumeric(date)) {
-                    continue;
-                }
-
-                // todo
-                if (date.equals(year - 1 + "1214")) {
-                    break;
-                }
-            }
-
-            while ((values = csvReader.readNext()) != null) {
-                List<String> fields = Arrays.asList(values);
-                String dateAsString = fields.get(nbpRatesCsvHeader.date());
-
-                // skip rows without date (e.g. with column information)
-                if (!StringUtils.isNumeric(dateAsString)) {
-                    continue;
-                }
-
-                LocalDate date = LocalDate.parse(dateAsString, DateTimeFormatter.ofPattern("yyyyMMdd"));
-                NbpDailyRates nbpDailyRates = new NbpDailyRates(date, fields.get(nbpRatesCsvHeader.usd()), fields.get(nbpRatesCsvHeader.eur()));
-                rates.put(nbpDailyRates.getDate(), nbpDailyRates);
-            }
-        }
+    private LinkedHashMap<LocalDate, NbpDailyRates> readNbpRatesFromFiles(String ratesFileYearBefore, String ratesFile) {
+        var rates = new LinkedHashMap<LocalDate, NbpDailyRates>();
+        loadRatesFromFile(ratesFile, rates, this::notValidDate);
+        loadRatesFromFile(ratesFileYearBefore, rates, anyOf(this::notValidDate, this::dateIsBeforeMidDecemberOfPreviousYear));
         return rates;
     }
 
-    // at NBP rates from the closest business day preceding transactions
-    public NbpDailyRates findRateForPreviousBusinessDay(LocalDate test) {
-        LocalDate previousDay = test.minusDays(1);
-        NbpDailyRates nbpDailyRates = rates.get(previousDay);
-        // todo refactor
-        if (nbpDailyRates != null) {
-            return nbpDailyRates;
+    private void loadRatesFromFile(String filename, LinkedHashMap<LocalDate, NbpDailyRates> rates, Predicate<String> skipRowPredicate) {
+        try (var csvReader = createCsvReader(filename, ';')) {
+            var headerRow = csvReader.readNext();
+            var indexes = new NbpCsvIndexes(headerRow);
+            loadDailyRatesFromCsvRow(rates, csvReader, indexes, skipRowPredicate);
+        } catch (CsvValidationException | IOException exception) {
+            throw new NbpRatesLoadingException(exception);
         }
-        do {
-            previousDay = previousDay.minusDays(1);
-        } while (rates.get(previousDay) == null);
-
-        return rates.get(previousDay);
     }
 
-    private static void prepopulateEmptyRates(LinkedHashMap<LocalDate, NbpDailyRates> rates, int year) {
-        LocalDate localDate = LocalDate.of(year - 1, Month.DECEMBER, 15);
-        LocalDate firstDayOfNextYear = LocalDate.of(year + 1, Month.JANUARY, 1);
-        do {
-            rates.put(localDate, null);
-            localDate = localDate.plusDays(1);
-        } while (localDate.isBefore(firstDayOfNextYear));
+    private void loadDailyRatesFromCsvRow(LinkedHashMap<LocalDate, NbpDailyRates> rates,
+                                          CSVReader csvReader,
+                                          NbpCsvIndexes indexes,
+                                          Predicate<String> skipRowPredicate) throws IOException, CsvValidationException {
+        String[] row;
+        while ((row = csvReader.readNext()) != null) {
+            String dateAsString = row[indexes.date()];
+
+            if (skipRowPredicate.test(dateAsString)) {
+                continue;
+            }
+
+            var date = LocalDate.parse(dateAsString, NBP_DATE_FORMAT);
+            var usdRate = row[indexes.usd()];
+            var eurRate = row[indexes.eur()];
+            var dailyRates = new NbpDailyRates(date, usdRate, eurRate);
+            rates.put(date, dailyRates);
+        }
+    }
+
+    public static <T> Predicate<T> anyOf(Predicate<T>... predicates) {
+        return Stream.of(predicates)
+                .reduce(Predicate::or)
+                .orElseThrow();
+    }
+
+    private boolean dateIsBeforeMidDecemberOfPreviousYear(String dateAsString) {
+        var previousYear = String.valueOf(year - 1);
+        var december = "12";
+        return dateAsString.compareTo(previousYear + december + PREVIOUS_YEAR_DECEMBER_DATE_TO_READ_FROM) < 0;
+    }
+
+    private boolean notValidDate(String dateAsString) {
+        return !StringUtils.isNumeric(dateAsString);
     }
 }
