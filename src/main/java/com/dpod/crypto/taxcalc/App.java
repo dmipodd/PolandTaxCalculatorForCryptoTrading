@@ -25,7 +25,6 @@ public class App {
         NbpRates nbpRates = new NbpRates(nbpRatesFileYearBefore, nbpRatesFile, year);
         List<Posting> postings = BitstampTransactionProcessor.generatePostingsFor(nbpRates, transactionsFile);
         TaxReport taxReport = TaxCalculation.calculate(postings);
-
         writeTaxReportToCsv(taxReport, generateOutputFileName(year));
     }
 
