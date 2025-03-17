@@ -7,6 +7,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class encapsulates the result of tax calculation, tax report. It includes: <br />
+ * - a list of all postings for all crypto trades, <br />
+ * - tax base (profit or loss), <br />
+ * - tax amount.
+ */
 public record TaxReport(
         List<Posting> postings,
         BigDecimal taxBase,
@@ -15,11 +21,15 @@ public record TaxReport(
     public List<String> toCsvRows() {
         List<String> rows = new ArrayList<>();
         rows.add(Posting.csvHeader());
-        postings.stream()
-                .map(Posting::toCsvRow)
-                .forEach(rows::add);
+        rows.addAll(rowsForAllPostings());
         rows.addAll(taxSummaryCsvRows());
         return rows;
+    }
+
+    private List<String> rowsForAllPostings() {
+        return postings.stream()
+                .map(Posting::toCsvRow)
+                .toList();
     }
 
     private List<String> taxSummaryCsvRows() {
