@@ -1,8 +1,8 @@
 package com.dpod.crypto.taxcalc;
 
+import com.dpod.crypto.taxcalc.process.BitstampTransactionProcessor;
 import com.dpod.crypto.taxcalc.process.nbp.NbpRates;
 import com.dpod.crypto.taxcalc.process.posting.Posting;
-import com.dpod.crypto.taxcalc.process.BitstampTransactionProcessor;
 import com.dpod.crypto.taxcalc.process.tax.TaxCalculation;
 import com.dpod.crypto.taxcalc.process.tax.TaxReport;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 public class App {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         var year = 2024;
         var nbpRatesFileYearBefore = "archiwum_tab_a_2023.csv";
         var nbpRatesFile = "archiwum_tab_a_2024.csv";

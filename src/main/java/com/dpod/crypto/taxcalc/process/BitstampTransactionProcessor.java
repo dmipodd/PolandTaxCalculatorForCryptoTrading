@@ -2,11 +2,12 @@ package com.dpod.crypto.taxcalc.process;
 
 import com.dpod.crypto.taxcalc.csv.BitstampCsvIndexes;
 import com.dpod.crypto.taxcalc.csv.CsvUtils;
+import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
+import com.dpod.crypto.taxcalc.process.nbp.NbpDailyRates;
+import com.dpod.crypto.taxcalc.process.nbp.NbpRates;
 import com.dpod.crypto.taxcalc.process.posting.Currency;
 import com.dpod.crypto.taxcalc.process.posting.Posting;
 import com.dpod.crypto.taxcalc.process.posting.PostingType;
-import com.dpod.crypto.taxcalc.process.nbp.NbpDailyRates;
-import com.dpod.crypto.taxcalc.process.nbp.NbpRates;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
@@ -20,11 +21,14 @@ import java.util.List;
 
 public class BitstampTransactionProcessor {
 
-    public static List<Posting> generatePostingsFor(NbpRates nbpRates, String filename) throws CsvValidationException, IOException {
-        try (CSVReader csvReader = CsvUtils.createCsvReader(filename, ',')) {
+    // todo generalize code
+    public static List<Posting> generatePostingsFor(NbpRates nbpRates, String filename) {
+        try (var csvReader = CsvUtils.createCsvReader(filename, ',')) {
             String[] headers = csvReader.readNext();
             var bitstampCsvIndexes = new BitstampCsvIndexes(headers);
             return populatePostingsFrom(nbpRates, csvReader, bitstampCsvIndexes);
+        } catch (CsvValidationException | IOException exception) {
+            throw new NbpRatesLoadingException(exception);
         }
     }
 
