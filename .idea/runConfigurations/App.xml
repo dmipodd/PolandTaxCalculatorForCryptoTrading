@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="App" type="Application" factoryName="Application" nameIsGenerated="true">
-    <option name="MAIN_CLASS_NAME" value="com.dpod.plcryptotaxcalc.App" />
+    <option name="MAIN_CLASS_NAME" value="com.dpod.crypto.taxcalc.App" />
     <module name="PolandTaxCalculatorForCryptoTrading" />
     <extension name="coverage">
       <pattern>

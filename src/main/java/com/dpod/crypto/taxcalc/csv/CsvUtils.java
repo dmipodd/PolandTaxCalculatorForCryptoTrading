@@ -6,9 +6,10 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import lombok.experimental.UtilityClass;
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.stream.IntStream;
+
+import static com.dpod.crypto.taxcalc.util.FileUtils.opeInputStreamFor;
 
 @UtilityClass
 public class CsvUtils {
@@ -24,13 +25,8 @@ public class CsvUtils {
         CSVParser csvParser = new CSVParserBuilder()
                 .withSeparator(separator)
                 .build();
-        return new CSVReaderBuilder(new InputStreamReader(inputStream(filename)))
+        return new CSVReaderBuilder(new InputStreamReader(opeInputStreamFor(filename)))
                 .withCSVParser(csvParser)
                 .build();
-    }
-
-    private static InputStream inputStream(String filename) {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        return classloader.getResourceAsStream(filename);
     }
 }
