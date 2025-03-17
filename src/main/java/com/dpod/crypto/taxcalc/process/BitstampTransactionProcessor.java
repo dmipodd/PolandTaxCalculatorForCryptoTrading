@@ -21,7 +21,6 @@ import java.util.List;
 
 public class BitstampTransactionProcessor {
 
-    // todo generalize code
     public static List<Posting> generatePostingsFor(NbpRates nbpRates, String filename) {
         try (var csvReader = CsvUtils.createCsvReader(filename, ',')) {
             String[] headers = csvReader.readNext();
