@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class TaxReportTest {
 
@@ -42,11 +42,22 @@ class TaxReportTest {
         List<String> csvRows = report.toCsvRows();
 
         // then
-        assertEquals("date,type,amount,currency,amount in PLN,NBP rate,NBP rate date", csvRows.get(0));
-        assertEquals(posting1.toCsvRow(), csvRows.get(1));
-        assertEquals(posting2.toCsvRow(), csvRows.get(2));
-        assertEquals("", csvRows.get(3));
-        assertEquals("PROFIT IS,500.00", csvRows.get(4));
-        assertEquals("TAX IS,100.00", csvRows.get(5));
+        assertThat(csvRows).containsExactly(
+                "",
+                ",,,POSTINGS,,,",
+                "",
+                "date,type,amount,currency,amount in PLN,NBP rate,NBP rate date",
+                posting1.toCsvRow(),
+                posting2.toCsvRow(),
+                "",
+                "",
+                ",,,TAX REPORT,,,",
+                "",
+                ",,revenue,expenses",
+                ",,754.12,-123.98",
+                "",
+                ",,taxBase(profit),tax",
+                ",,630.14,119.73"
+        );
     }
 }

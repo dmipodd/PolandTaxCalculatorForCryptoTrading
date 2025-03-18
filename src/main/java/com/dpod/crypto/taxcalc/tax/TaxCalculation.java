@@ -29,7 +29,7 @@ public class TaxCalculation {
                 .map(Posting::getAmountPln)
                 .filter(amountPlnPredicate)
                 .reduce(BigDecimal::add)
-                .orElseThrow();
+                .orElse(BigDecimal.ZERO);
         taxBase = taxBase.setScale(2, RoundingMode.HALF_UP);
         return taxBase;
     }
