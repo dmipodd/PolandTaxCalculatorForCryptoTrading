@@ -2,4 +2,4 @@ year: 2024
 source: BITSTAMP
 nbpRatesFileYearBefore: archiwum_tab_a_2023.csv
 nbpRatesFile: archiwum_tab_a_2024.csv
-transactionsFile: TransactionsExport.csv
+transactionsFile: BitstampTransactionsExport.csv

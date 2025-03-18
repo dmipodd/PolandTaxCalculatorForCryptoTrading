@@ -25,8 +25,8 @@ public class BitstampTransactionProcessor implements Processor {
     public List<Posting> generatePostingsFor(NbpRates nbpRates, String filename) {
         try (var csvReader = CsvUtils.createCsvReader(filename, ',')) {
             String[] headers = csvReader.readNext();
-            var bitstampCsvIndexes = new BitstampCsvIndexes(headers);
-            return populatePostingsFrom(nbpRates, csvReader, bitstampCsvIndexes);
+            var csvIndexes = new BitstampCsvIndexes(headers);
+            return populatePostingsFrom(nbpRates, csvReader, csvIndexes);
         } catch (CsvValidationException | IOException exception) {
             throw new NbpRatesLoadingException(exception);
         }
