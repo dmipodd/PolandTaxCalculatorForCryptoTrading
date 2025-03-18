@@ -1,4 +1,4 @@
-package com.dpod.crypto.taxcalc.process.nbp;
+package com.dpod.crypto.taxcalc.nbp;
 
 import com.dpod.crypto.taxcalc.csv.CsvUtils;
 import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;

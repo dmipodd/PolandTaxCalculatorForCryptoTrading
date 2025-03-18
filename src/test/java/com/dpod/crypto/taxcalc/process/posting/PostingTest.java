@@ -1,5 +1,8 @@
 package com.dpod.crypto.taxcalc.process.posting;
 
+import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.Posting;
+import com.dpod.crypto.taxcalc.posting.PostingType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

@@ -1,6 +1,6 @@
-package com.dpod.crypto.taxcalc.process.tax;
+package com.dpod.crypto.taxcalc.tax;
 
-import com.dpod.crypto.taxcalc.process.posting.Posting;
+import com.dpod.crypto.taxcalc.posting.Posting;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;

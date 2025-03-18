@@ -1,18 +1,18 @@
 package com.dpod.crypto.taxcalc.process;
 
-import com.dpod.crypto.taxcalc.process.nbp.NbpRates;
-import com.dpod.crypto.taxcalc.process.posting.Currency;
-import com.dpod.crypto.taxcalc.process.posting.Posting;
-import com.dpod.crypto.taxcalc.process.posting.PostingType;
+import com.dpod.crypto.taxcalc.nbp.NbpRates;
+import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.Posting;
+import com.dpod.crypto.taxcalc.posting.PostingType;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.dpod.crypto.taxcalc.process.posting.Currency.EUR;
-import static com.dpod.crypto.taxcalc.process.posting.Currency.USD;
-import static com.dpod.crypto.taxcalc.process.posting.PostingType.*;
+import static com.dpod.crypto.taxcalc.posting.Currency.EUR;
+import static com.dpod.crypto.taxcalc.posting.Currency.USD;
+import static com.dpod.crypto.taxcalc.posting.PostingType.*;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class BitstampTransactionProcessorTest {
@@ -24,10 +24,11 @@ class BitstampTransactionProcessorTest {
         var nbpRatesFileYearBefore = "archiwum_tab_a_2023.csv";
         var nbpRatesFile = "archiwum_tab_a_2024.csv";
         var transactionsFile = "TestTransactionsExport.csv";
-        NbpRates nbpRates = new NbpRates(nbpRatesFileYearBefore, nbpRatesFile, year);
+        var nbpRates = new NbpRates(nbpRatesFileYearBefore, nbpRatesFile, year);
+        var processor = new BitstampTransactionProcessor();
 
         // when
-        List<Posting> postings = BitstampTransactionProcessor.generatePostingsFor(nbpRates, transactionsFile);
+        List<Posting> postings = processor.generatePostingsFor(nbpRates, transactionsFile);
 
         // then
         assertThat(postings).containsExactly(

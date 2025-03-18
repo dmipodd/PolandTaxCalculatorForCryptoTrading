@@ -1,4 +1,4 @@
-package com.dpod.crypto.taxcalc.process.posting;
+package com.dpod.crypto.taxcalc.posting;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

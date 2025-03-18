@@ -1,6 +1,7 @@
 package com.dpod.crypto.taxcalc.process.nbp;
 
-import com.dpod.crypto.taxcalc.process.posting.Currency;
+import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
+import com.dpod.crypto.taxcalc.posting.Currency;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

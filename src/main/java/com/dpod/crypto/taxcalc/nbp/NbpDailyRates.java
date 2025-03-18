@@ -1,6 +1,6 @@
-package com.dpod.crypto.taxcalc.process.nbp;
+package com.dpod.crypto.taxcalc.nbp;
 
-import com.dpod.crypto.taxcalc.process.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.Currency;
 import lombok.Getter;
 
 import java.math.BigDecimal;

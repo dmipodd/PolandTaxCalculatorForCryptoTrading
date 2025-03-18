@@ -1,9 +1,8 @@
 package com.dpod.crypto.taxcalc;
 
 import com.dpod.crypto.taxcalc.config.ConfigLoader;
-import com.dpod.crypto.taxcalc.process.BitstampTransactionProcessor;
-import com.dpod.crypto.taxcalc.process.nbp.NbpRates;
-import com.dpod.crypto.taxcalc.process.tax.TaxCalculation;
+import com.dpod.crypto.taxcalc.nbp.NbpRates;
+import com.dpod.crypto.taxcalc.tax.TaxCalculation;
 
 import java.io.IOException;
 
@@ -15,7 +14,7 @@ public class App {
     public static void main(String[] args) throws IOException {
         var config = ConfigLoader.loadConfig("config.yaml");
         var nbpRates = new NbpRates(config.nbpRatesFileYearBefore(), config.nbpRatesFile(), config.year());
-        var postings = BitstampTransactionProcessor.generatePostingsFor(nbpRates, config.transactionsFile());
+        var postings = config.getProcessor().generatePostingsFor(nbpRates, config.transactionsFile());
         var taxReport = TaxCalculation.calculate(postings);
         writeRowsToCsv(taxReport.toCsvRows(), generateOutputFileName(config.year()));
     }

@@ -1,8 +1,9 @@
 package com.dpod.crypto.taxcalc.process.tax;
 
-import com.dpod.crypto.taxcalc.process.posting.Currency;
-import com.dpod.crypto.taxcalc.process.posting.Posting;
-import com.dpod.crypto.taxcalc.process.posting.PostingType;
+import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.Posting;
+import com.dpod.crypto.taxcalc.posting.PostingType;
+import com.dpod.crypto.taxcalc.tax.TaxReport;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

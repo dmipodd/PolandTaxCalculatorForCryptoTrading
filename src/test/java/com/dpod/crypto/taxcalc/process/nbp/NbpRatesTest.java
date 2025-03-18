@@ -1,5 +1,7 @@
 package com.dpod.crypto.taxcalc.process.nbp;
 
+import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
+import com.dpod.crypto.taxcalc.nbp.NbpRates;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
