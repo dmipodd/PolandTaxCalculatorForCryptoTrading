@@ -32,18 +32,20 @@ public class BitstampTransactionProcessor implements Processor {
         }
     }
 
+    // todo this piece of code looks similar to what we have in BinanceTransactionProcessor, consider refactoring
     private List<Posting> populatePostingsFrom(NbpRates nbpRates,
                                                CSVReader csvReader,
                                                BitstampCsvIndexes indexes) throws IOException, CsvValidationException {
         List<Posting> postings = new ArrayList<>();
         String[] row;
         while ((row = csvReader.readNext()) != null) {
-            handleTransaction(row, nbpRates, indexes, postings);
+            List<Posting> twoPostings = populateTwoPostingsFromTransaction(row, nbpRates, indexes);
+            postings.addAll(twoPostings);
         }
         return postings;
     }
 
-    private void handleTransaction(String[] row, NbpRates nbpRates, BitstampCsvIndexes indexes, List<Posting> postings) {
+    private List<Posting> populateTwoPostingsFromTransaction(String[] row, NbpRates nbpRates, BitstampCsvIndexes indexes) {
         LocalDate tradeDate = getTradeDate(row, indexes);
         Currency currency = Currency.valueOf(row[indexes.currency()]);
         NbpDailyRates nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
@@ -57,7 +59,6 @@ public class BitstampTransactionProcessor implements Processor {
                 .type(type)
                 .rate(nbpDailyRates.getRateFor(currency))
                 .build();
-        postings.add(tradePosting);
 
         Currency feeCurrency = Currency.valueOf(row[indexes.feeCurrency()]);
         Posting feePosting = Posting.builder()
@@ -68,7 +69,7 @@ public class BitstampTransactionProcessor implements Processor {
                 .type(PostingType.FEE)
                 .rate(nbpDailyRates.getRateFor(currency))
                 .build();
-        postings.add(feePosting);
+        return List.of(tradePosting, feePosting);
     }
 
     /**

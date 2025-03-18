@@ -5,23 +5,18 @@ import com.dpod.crypto.taxcalc.csv.CsvUtils;
 import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
 import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
 import com.dpod.crypto.taxcalc.nbp.NbpRates;
-import com.dpod.crypto.taxcalc.posting.Currency;
 import com.dpod.crypto.taxcalc.posting.Posting;
-import com.dpod.crypto.taxcalc.posting.PostingType;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-// todo finish the implementation and add tests
 public class BinanceTransactionProcessor implements Processor {
+
+    public static final int DATE_END_INDEX_EXCLUSIVE = "yyyy-MM-dd".length();
 
     @Override
     public List<Posting> generatePostingsFor(NbpRates nbpRates, String filename) {
@@ -40,15 +35,18 @@ public class BinanceTransactionProcessor implements Processor {
         List<Posting> postings = new ArrayList<>();
         String[] row;
         while ((row = csvReader.readNext()) != null) {
-            handleTransaction(row, nbpRates, indexes, postings);
+            List<Posting> twoPostings = populateTwoPostingsFromTransaction(row, nbpRates, indexes);
+            postings.addAll(twoPostings);
         }
         return postings;
     }
 
-    private void handleTransaction(String[] row, NbpRates nbpRates, BinanceCsvIndexes indexes, List<Posting> postings) {
-//        LocalDate tradeDate = getTradeDate(row, indexes);
+    private List<Posting> populateTwoPostingsFromTransaction(String[] row, NbpRates nbpRates, BinanceCsvIndexes indexes) {
+        LocalDate tradeDate = getTradeDate(row, indexes);
+        NbpDailyRates nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
+
+        // todo finish the implementation and add tests
 //        Currency currency = Currency.valueOf(row[indexes.currency()]);
-//        NbpDailyRates nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
 //
 //        PostingType type = PostingType.fromText(row[indexes.action()]);
 //        Posting tradePosting = Posting.builder()
@@ -71,13 +69,11 @@ public class BinanceTransactionProcessor implements Processor {
 //                .rate(nbpDailyRates.getRateFor(currency))
 //                .build();
 //        postings.add(feePosting);
+        return List.of();
     }
 
-    /**
-     * CSV contains dateTime in UTC timezone, so we have to covert it to Poland-timezone.
-     */
     private LocalDate getTradeDate(String[] row, BinanceCsvIndexes indexes) {
         String dateTimeAsString = row[indexes.dateTime()];
-        return LocalDate.parse(dateTimeAsString);
+        return LocalDate.parse(dateTimeAsString.substring(0, DATE_END_INDEX_EXCLUSIVE));
     }
 }
