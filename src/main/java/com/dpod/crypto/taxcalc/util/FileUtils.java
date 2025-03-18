@@ -1,5 +1,6 @@
 package com.dpod.crypto.taxcalc.util;
 
+import com.dpod.crypto.taxcalc.config.AppConfig;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,9 +22,12 @@ public class FileUtils {
         return classloader.getResourceAsStream(fileInClassPath);
     }
 
-    public static String generateOutputFileName(int year) {
+    public static String generateOutputFileName(AppConfig config) {
         String currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-        return String.format("bitstamp.result.%d.%s.csv", year, currentDateTime);
+        return String.format("%s.result.%d.%s.csv",
+                config.source().name().toLowerCase(),
+                config.year(),
+                currentDateTime);
     }
 
     public static void writeRowsToCsv(List<String> rows, String outputFilename) throws IOException {

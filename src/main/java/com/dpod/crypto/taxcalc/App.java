@@ -16,6 +16,6 @@ public class App {
         var nbpRates = new NbpRates(config.nbpRatesFileYearBefore(), config.nbpRatesFile(), config.year());
         var postings = config.getProcessor().generatePostingsFor(nbpRates, config.transactionsFile());
         var taxReport = TaxCalculation.calculate(postings);
-        writeRowsToCsv(taxReport.toCsvRows(), generateOutputFileName(config.year()));
+        writeRowsToCsv(taxReport.toCsvRows(), generateOutputFileName(config));
     }
 }
