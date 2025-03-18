@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.dpod.crypto.taxcalc.util.BigDecimalUtils.isPositive;
+
 /**
  * Class encapsulates the result of tax calculation, tax report. It includes: <br />
  * - a list of all postings for all crypto trades, <br />
@@ -15,15 +17,32 @@ import java.util.List;
  */
 public record TaxReport(
         List<Posting> postings,
+        BigDecimal revenue,
+        BigDecimal expenses,
         BigDecimal taxBase,
         BigDecimal tax) {
 
     public List<String> toCsvRows() {
         List<String> rows = new ArrayList<>();
+        rows.add(emptyRow());
+        rows.add(centeredTitleRow("POSTINGS"));
+        rows.add(emptyRow());
         rows.add(Posting.csvHeader());
         rows.addAll(rowsForAllPostings());
+        rows.add(emptyRow());
+        rows.add(emptyRow());
+        rows.add(centeredTitleRow("TAX REPORT"));
+        rows.add(emptyRow());
         rows.addAll(taxSummaryCsvRows());
         return rows;
+    }
+
+    private String emptyRow() {
+        return StringUtils.EMPTY;
+    }
+
+    private String centeredTitleRow(String title) {
+        return String.format(",,,%s,,,", title);
     }
 
     private List<String> rowsForAllPostings() {
@@ -34,16 +53,11 @@ public record TaxReport(
 
     private List<String> taxSummaryCsvRows() {
         List<String> rows = new ArrayList<>();
-
-        // add an empty line as a separator of summary from postings
-        rows.add(StringUtils.EMPTY);
-
-        if (taxBase.compareTo(BigDecimal.ZERO) > 0) {
-            rows.add("PROFIT IS," + taxBase);
-            rows.add("TAX IS," + tax);
-        } else {
-            rows.add("LOSS," + taxBase);
-        }
+        rows.add(",,revenue,expenses");
+        rows.add(String.format(",,%s,%s", revenue, expenses));
+        rows.add(emptyRow());
+        rows.add(String.format(",,taxBase(%s),tax", isPositive(taxBase) ? "profit" : "loss"));
+        rows.add(String.format(",,%s,%s", taxBase, tax));
         return rows;
     }
 }

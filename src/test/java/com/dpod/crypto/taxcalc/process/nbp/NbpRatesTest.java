@@ -57,7 +57,7 @@ class NbpRatesTest {
                                                                            BigDecimal expectedUsdRate,
                                                                            BigDecimal expectedEurRate) {
         // when
-        NbpDailyRates result = nbpRates.findRateForPreviousBusinessDay(localDate);
+        NbpDailyRates result = nbpRates.findRateForClosestBusinessDayPriorTo(localDate);
 
         // then
         assertEquals(expectedDate, result.getDate());

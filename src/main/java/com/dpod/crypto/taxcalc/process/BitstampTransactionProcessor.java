@@ -46,7 +46,7 @@ public class BitstampTransactionProcessor implements Processor {
     private void handleTransaction(String[] row, NbpRates nbpRates, BitstampCsvIndexes indexes, List<Posting> postings) {
         LocalDate tradeDate = getTradeDate(row, indexes);
         Currency currency = Currency.valueOf(row[indexes.currency()]);
-        NbpDailyRates nbpDailyRates = nbpRates.findRateForPreviousBusinessDay(tradeDate);
+        NbpDailyRates nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
 
         PostingType type = PostingType.fromText(row[indexes.action()]);
         Posting tradePosting = Posting.builder()

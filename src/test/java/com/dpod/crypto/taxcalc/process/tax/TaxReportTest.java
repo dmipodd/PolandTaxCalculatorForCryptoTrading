@@ -35,7 +35,10 @@ class TaxReportTest {
                 .build();
 
         // when
-        TaxReport report = new TaxReport(List.of(posting1, posting2), new BigDecimal("500.00"), new BigDecimal("100.00"));
+        TaxReport report = new TaxReport(
+                List.of(posting1, posting2),
+                new BigDecimal("754.12"), new BigDecimal("-123.98"),
+                new BigDecimal("630.14"), new BigDecimal("119.73"));
         List<String> csvRows = report.toCsvRows();
 
         // then

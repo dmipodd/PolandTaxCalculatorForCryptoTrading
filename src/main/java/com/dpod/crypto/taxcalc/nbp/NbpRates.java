@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 /**
  * Class encapsulates information about National Polish Bank average daily currency rates.
- * Main purpose of the class is to find the previous business day preceding a trade day.
+ * Main purpose of the class is to find the closest business day prior to the trade day.
  * The source of information is a pair of CSV files for a specified year and for previous year.
  * We need only a small fraction of previous year data for January 2 corner case.
  */
@@ -34,7 +34,7 @@ public class NbpRates {
     }
 
     /**
-     * Finds NBP rates from the closest business day preceding specified #date.<br />
+     * Finds NBP rates from the closest business day preceding specified #tradeDate.<br />
      * Examples:
      * <ul>
      *  <li>
@@ -49,8 +49,8 @@ public class NbpRates {
      *  </li>
      * </ul>
      */
-    public NbpDailyRates findRateForPreviousBusinessDay(LocalDate date) {
-        var previousDay = date;
+    public NbpDailyRates findRateForClosestBusinessDayPriorTo(LocalDate tradeDate) {
+        var previousDay = tradeDate;
         NbpDailyRates dailyRates;
         do {
             previousDay = previousDay.minusDays(1);

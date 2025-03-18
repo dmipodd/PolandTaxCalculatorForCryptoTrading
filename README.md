@@ -25,4 +25,12 @@ Read more about the app: https://medium.com/@dzmpdd/my-pet-project-a-poland-tax-
    _java -jar target/polandTaxCalculatorForCryptoTrading-1.0.jar_
 
 4) if there were no errors then it means that the output file was generated. 
-   Find the output file with the tax report and use it to fill in PIT-38, section E tax declaration. 
+   Find the output file with the tax report and use it to fill in PIT-38, section E tax declaration.
+
+## 🛑 Disclaimer
+This application is for informational purposes only. While the tool helps with tax calculations, 
+it does not constitute professional accounting or financial advice.
+
+The application author (Paddubnik Dzmitry) does not take responsibility for any errors, omissions, or misinterpretations in your tax declaration.
+
+In case of doubts please consult a qualified accountant or tax advisor before submitting your tax report.
