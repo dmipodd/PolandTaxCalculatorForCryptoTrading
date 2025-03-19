@@ -1,6 +1,6 @@
 package com.dpod.crypto.taxcalc.process.tax;
 
-import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.FiatCurrency;
 import com.dpod.crypto.taxcalc.posting.Posting;
 import com.dpod.crypto.taxcalc.posting.PostingType;
 import com.dpod.crypto.taxcalc.tax.TaxReport;
@@ -21,7 +21,7 @@ class TaxReportTest {
                 .date(LocalDate.of(2024, 3, 17))
                 .type(PostingType.SELL)
                 .amount(new BigDecimal("100.00"))
-                .currency(Currency.USD)
+                .currency(FiatCurrency.USD)
                 .rate(new BigDecimal("4.50"))
                 .rateDate(LocalDate.of(2024, 3, 16))
                 .build();
@@ -29,7 +29,7 @@ class TaxReportTest {
                 .date(LocalDate.of(2024, 3, 18))
                 .type(PostingType.SELL)
                 .amount(new BigDecimal("200.00"))
-                .currency(Currency.EUR)
+                .currency(FiatCurrency.EUR)
                 .rate(new BigDecimal("4.75"))
                 .rateDate(LocalDate.of(2024, 3, 17))
                 .build();

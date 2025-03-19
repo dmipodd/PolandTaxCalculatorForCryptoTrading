@@ -16,13 +16,13 @@ public class Posting {
     private final LocalDate date;
     private final PostingType type;
     private final BigDecimal amount;
-    private final Currency currency;
+    private final FiatCurrency currency;
     private final BigDecimal rate;
     private final LocalDate rateDate;
     private final BigDecimal amountPln;
 
     @Builder
-    public Posting(LocalDate date, PostingType type, BigDecimal amount, Currency currency, BigDecimal rate, LocalDate rateDate) {
+    public Posting(LocalDate date, PostingType type, BigDecimal amount, FiatCurrency currency, BigDecimal rate, LocalDate rateDate) {
         this.date = date;
         this.type = type;
         this.currency = currency;

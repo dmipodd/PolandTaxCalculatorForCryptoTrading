@@ -1,7 +1,7 @@
 package com.dpod.crypto.taxcalc.process;
 
 import com.dpod.crypto.taxcalc.nbp.NbpRates;
-import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.FiatCurrency;
 import com.dpod.crypto.taxcalc.posting.Posting;
 import com.dpod.crypto.taxcalc.posting.PostingType;
 import org.junit.jupiter.api.Test;
@@ -10,12 +10,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.dpod.crypto.taxcalc.posting.Currency.EUR;
-import static com.dpod.crypto.taxcalc.posting.Currency.USD;
+import static com.dpod.crypto.taxcalc.posting.FiatCurrency.EUR;
+import static com.dpod.crypto.taxcalc.posting.FiatCurrency.USD;
 import static com.dpod.crypto.taxcalc.posting.PostingType.*;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-class BitstampTransactionPostingsProducerTest {
+class BitstampPostingsProducerTest {
 
     @Test
     void shouldProducePostingsCorrectly() {
@@ -25,7 +25,7 @@ class BitstampTransactionPostingsProducerTest {
         var nbpRatesFile = "archiwum_tab_a_2024.csv";
         var transactionsFile = "TestTransactionsExport.csv";
         var nbpRates = new NbpRates(nbpRatesFileYearBefore, nbpRatesFile, year);
-        var processor = new BitstampTransactionPostingsProducer();
+        var processor = new BitstampPostingsProducer();
 
         // when
         List<Posting> postings = processor.createPostingsFor(nbpRates, transactionsFile);
@@ -40,7 +40,7 @@ class BitstampTransactionPostingsProducerTest {
                 createPosting("2024-12-19", FEE, "0.08597", EUR, "4.2628", "2024-12-18"));
     }
 
-    private Posting createPosting(String date, PostingType postingType, String amount, Currency currency,
+    private Posting createPosting(String date, PostingType postingType, String amount, FiatCurrency currency,
                                   String rate, String rateDate) {
         return Posting.builder()
                 .date(LocalDate.parse(date))

@@ -1,7 +1,7 @@
 package com.dpod.crypto.taxcalc.config;
 
-import com.dpod.crypto.taxcalc.process.BinanceTransactionPostingsProducer;
-import com.dpod.crypto.taxcalc.process.BitstampTransactionPostingsProducer;
+import com.dpod.crypto.taxcalc.process.BinancePostingsProducer;
+import com.dpod.crypto.taxcalc.process.BitstampPostingsProducer;
 import com.dpod.crypto.taxcalc.process.PostingsProducer;
 import com.dpod.crypto.taxcalc.tax.TaxCalculator;
 
@@ -14,8 +14,8 @@ public record AppConfig(
 
     public PostingsProducer getPostingsProducer() {
         return switch (source) {
-            case BINANCE -> new BinanceTransactionPostingsProducer();
-            case BITSTAMP -> new BitstampTransactionPostingsProducer();
+            case BINANCE -> new BinancePostingsProducer();
+            case BITSTAMP -> new BitstampPostingsProducer();
         };
     }
 

@@ -1,6 +1,6 @@
 package com.dpod.crypto.taxcalc.process.posting;
 
-import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.FiatCurrency;
 import com.dpod.crypto.taxcalc.posting.Posting;
 import com.dpod.crypto.taxcalc.posting.PostingType;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class PostingTest {
             "2024-03-17, BUY,  100.00, USD, 4.50, 2024-03-16, -450.0000",
             "2024-03-17, SELL, 200.00, EUR, 4.75, 2024-03-16, 950.0000"
     })
-    void testPostingBuilderAndCsvRow(LocalDate date, PostingType postingType, BigDecimal amount, Currency currency,
+    void testPostingBuilderAndCsvRow(LocalDate date, PostingType postingType, BigDecimal amount, FiatCurrency currency,
                                      BigDecimal rate, LocalDate rateDate, String expectedAmountPln) {
         // given
         Posting posting = Posting.builder()

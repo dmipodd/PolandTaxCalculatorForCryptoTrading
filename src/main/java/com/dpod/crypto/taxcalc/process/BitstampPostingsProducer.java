@@ -5,7 +5,7 @@ import com.dpod.crypto.taxcalc.csv.CsvUtils;
 import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
 import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
 import com.dpod.crypto.taxcalc.nbp.NbpRates;
-import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.FiatCurrency;
 import com.dpod.crypto.taxcalc.posting.Posting;
 import com.dpod.crypto.taxcalc.posting.PostingType;
 import com.opencsv.CSVReader;
@@ -19,7 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BitstampTransactionPostingsProducer implements PostingsProducer {
+public class BitstampPostingsProducer implements PostingsProducer {
 
     @Override
     public List<Posting> createPostingsFor(NbpRates nbpRates, String filename) {
@@ -47,7 +47,7 @@ public class BitstampTransactionPostingsProducer implements PostingsProducer {
 
     private List<Posting> populateTwoPostingsFromTransaction(String[] row, NbpRates nbpRates, BitstampCsvIndexes indexes) {
         LocalDate tradeDate = getTradeDate(row, indexes);
-        Currency currency = Currency.valueOf(row[indexes.currency()]);
+        FiatCurrency currency = FiatCurrency.valueOf(row[indexes.currency()]);
         NbpDailyRates nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
 
         PostingType type = PostingType.fromText(row[indexes.action()]);
@@ -60,7 +60,7 @@ public class BitstampTransactionPostingsProducer implements PostingsProducer {
                 .rate(nbpDailyRates.getRateFor(currency))
                 .build();
 
-        Currency feeCurrency = Currency.valueOf(row[indexes.feeCurrency()]);
+        FiatCurrency feeCurrency = FiatCurrency.valueOf(row[indexes.feeCurrency()]);
         Posting feePosting = Posting.builder()
                 .amount(new BigDecimal(row[indexes.fee()]))
                 .currency(feeCurrency)

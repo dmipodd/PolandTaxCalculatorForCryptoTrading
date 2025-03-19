@@ -1,7 +1,7 @@
 package com.dpod.crypto.taxcalc.process.nbp;
 
 import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
-import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.FiatCurrency;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -25,9 +25,9 @@ class NbpDailyRatesTest {
         // then
         assertEquals(date, rates.getDate());
         assertEquals(expectedUsdRate, rates.getUsdRate());
-        assertEquals(expectedUsdRate, rates.getRateFor(Currency.USD));
+        assertEquals(expectedUsdRate, rates.getRateFor(FiatCurrency.USD));
         assertEquals(expectedEurRate, rates.getEurRate());
-        assertEquals(expectedEurRate, rates.getRateFor(Currency.EUR));
+        assertEquals(expectedEurRate, rates.getRateFor(FiatCurrency.EUR));
     }
 
     @Test

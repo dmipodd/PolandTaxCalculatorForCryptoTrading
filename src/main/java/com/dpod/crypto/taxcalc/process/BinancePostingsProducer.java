@@ -5,16 +5,21 @@ import com.dpod.crypto.taxcalc.csv.CsvUtils;
 import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
 import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
 import com.dpod.crypto.taxcalc.nbp.NbpRates;
+import com.dpod.crypto.taxcalc.posting.FiatCurrencyAmount;
+import com.dpod.crypto.taxcalc.posting.FiatCurrency;
 import com.dpod.crypto.taxcalc.posting.Posting;
+import com.dpod.crypto.taxcalc.posting.PostingType;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class BinanceTransactionPostingsProducer implements PostingsProducer {
+public class BinancePostingsProducer implements PostingsProducer {
 
     public static final int DATE_END_INDEX_EXCLUSIVE = "yyyy-MM-dd".length();
 
@@ -42,36 +47,40 @@ public class BinanceTransactionPostingsProducer implements PostingsProducer {
     }
 
     private List<Posting> populateTwoPostingsFromTransaction(String[] row, NbpRates nbpRates, BinanceCsvIndexes indexes) {
-        LocalDate tradeDate = getTradeDate(row, indexes);
-        NbpDailyRates nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
+        var tradeDate = getTradeDate(row, indexes);
+        var nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
 
-        // todo finish the implementation and add tests
-//        Currency currency = Currency.valueOf(row[indexes.currency()]);
-//
-//        PostingType type = PostingType.fromText(row[indexes.action()]);
-//        Posting tradePosting = Posting.builder()
-//                .amount(new BigDecimal(row[indexes.amount()]))
-//                .currency(currency)
-//                .rateDate(nbpDailyRates.getDate())
-//                .date(tradeDate)
-//                .type(type)
-//                .rate(nbpDailyRates.getRateFor(currency))
-//                .build();
-//        postings.add(tradePosting);
-//
-//        Currency feeCurrency = Currency.valueOf(row[indexes.feeCurrency()]);
-//        Posting feePosting = Posting.builder()
-//                .amount(new BigDecimal(row[indexes.fee()]))
-//                .currency(feeCurrency)
-//                .rateDate(nbpDailyRates.getDate())
-//                .date(tradeDate)
-//                .type(PostingType.FEE)
-//                .rate(nbpDailyRates.getRateFor(currency))
-//                .build();
-//        postings.add(feePosting);
-        return List.of();
+        PostingType postingType;
+        FiatCurrencyAmount currencyAmount = FiatCurrencyAmount.parseSpaceDelimited(row[indexes.receiveAmount()]);
+        if (currencyAmount == null) {
+            postingType = PostingType.SELL;
+            currencyAmount = FiatCurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
+            Objects.requireNonNull(currencyAmount);
+        } else {
+            postingType = PostingType.BUY;
+        }
+        Posting tradePosting = createposting(currencyAmount, nbpDailyRates, tradeDate, postingType);
+
+        var feeCurrencyAmount = FiatCurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
+        Objects.requireNonNull(feeCurrencyAmount);
+        Posting feePosting = createposting(feeCurrencyAmount, nbpDailyRates, tradeDate, PostingType.FEE);
+        return List.of(tradePosting, feePosting);
     }
 
+    private Posting createposting(FiatCurrencyAmount currencyAmount, NbpDailyRates nbpDailyRates, LocalDate tradeDate, PostingType postingType) {
+        return Posting.builder()
+                .amount(currencyAmount.amount())
+                .currency(currencyAmount.currency())
+                .rateDate(nbpDailyRates.getDate())
+                .date(tradeDate)
+                .type(postingType)
+                .rate(nbpDailyRates.getRateFor(currencyAmount.currency()))
+                .build();
+    }
+
+    /**
+     * Datetime is already in a correct local timezone.
+     */
     private LocalDate getTradeDate(String[] row, BinanceCsvIndexes indexes) {
         String dateTimeAsString = row[indexes.dateTime()];
         return LocalDate.parse(dateTimeAsString.substring(0, DATE_END_INDEX_EXCLUSIVE));

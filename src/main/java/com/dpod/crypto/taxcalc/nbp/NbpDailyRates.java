@@ -1,6 +1,6 @@
 package com.dpod.crypto.taxcalc.nbp;
 
-import com.dpod.crypto.taxcalc.posting.Currency;
+import com.dpod.crypto.taxcalc.posting.FiatCurrency;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -24,7 +24,7 @@ public class NbpDailyRates {
         return new BigDecimal(rate);
     }
 
-    public BigDecimal getRateFor(Currency currency) {
+    public BigDecimal getRateFor(FiatCurrency currency) {
         return switch (currency) {
             case EUR -> eurRate;
             case USD -> usdRate;
