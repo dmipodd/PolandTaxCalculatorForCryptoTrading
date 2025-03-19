@@ -1,6 +1,8 @@
 # A Poland Tax Calculator for Crypto Trading
 ## 📘 About
-This application calculates taxes on cryptocurrency trading for Polish tax residents, following local tax regulations. 
+This application calculates taxes on cryptocurrency trading for Polish tax residents, following local tax regulations.
+Calculated values can be used to fill in PIT-38 tax declaration, section E (dedicated to cryptocurrencies trading).
+
 Please read about the app in this article: 
 https://medium.com/@dzmpdd/my-pet-project-a-poland-tax-calculator-for-crypto-trading-70d9dc3e1537 
 
