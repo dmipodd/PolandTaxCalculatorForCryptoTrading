@@ -3,6 +3,7 @@ package com.dpod.crypto.taxcalc.posting;
 import java.util.Arrays;
 
 public enum FiatCurrency {
+
     EUR,
     USD;
 

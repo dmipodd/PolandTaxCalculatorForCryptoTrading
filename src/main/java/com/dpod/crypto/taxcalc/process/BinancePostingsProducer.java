@@ -5,10 +5,7 @@ import com.dpod.crypto.taxcalc.csv.CsvUtils;
 import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
 import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
 import com.dpod.crypto.taxcalc.nbp.NbpRates;
-import com.dpod.crypto.taxcalc.posting.FiatCurrencyAmount;
-import com.dpod.crypto.taxcalc.posting.FiatCurrency;
-import com.dpod.crypto.taxcalc.posting.Posting;
-import com.dpod.crypto.taxcalc.posting.PostingType;
+import com.dpod.crypto.taxcalc.posting.*;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
@@ -51,19 +48,21 @@ public class BinancePostingsProducer implements PostingsProducer {
         var nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
 
         PostingType postingType;
-        FiatCurrencyAmount currencyAmount = FiatCurrencyAmount.parseSpaceDelimited(row[indexes.receiveAmount()]);
-        if (currencyAmount == null) {
+        FiatCurrencyAmount fiatCurrencyAmount;
+        CurrencyAmount receivedCurrencyAmount = CurrencyAmount.parseSpaceDelimited(row[indexes.receiveAmount()]);
+        CurrencyAmount spentCurrencyAmount = CurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
+        if (receivedCurrencyAmount instanceof FiatCurrencyAmount) {
             postingType = PostingType.SELL;
-            currencyAmount = FiatCurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
-            Objects.requireNonNull(currencyAmount);
+            fiatCurrencyAmount = (FiatCurrencyAmount) receivedCurrencyAmount;
         } else {
             postingType = PostingType.BUY;
+            fiatCurrencyAmount = (FiatCurrencyAmount) spentCurrencyAmount;
         }
-        Posting tradePosting = createposting(currencyAmount, nbpDailyRates, tradeDate, postingType);
+        Posting tradePosting = createposting(fiatCurrencyAmount, nbpDailyRates, tradeDate, postingType);
 
-        var feeCurrencyAmount = FiatCurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
-        Objects.requireNonNull(feeCurrencyAmount);
+        var feeCurrencyAmount = (FiatCurrencyAmount) CurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
         Posting feePosting = createposting(feeCurrencyAmount, nbpDailyRates, tradeDate, PostingType.FEE);
+
         return List.of(tradePosting, feePosting);
     }
 
