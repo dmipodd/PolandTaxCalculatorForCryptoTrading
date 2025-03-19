@@ -5,16 +5,17 @@ import com.dpod.crypto.taxcalc.csv.CsvUtils;
 import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
 import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
 import com.dpod.crypto.taxcalc.nbp.NbpRates;
-import com.dpod.crypto.taxcalc.posting.*;
+import com.dpod.crypto.taxcalc.posting.CurrencyAmount;
+import com.dpod.crypto.taxcalc.posting.FiatCurrencyAmount;
+import com.dpod.crypto.taxcalc.posting.Posting;
+import com.dpod.crypto.taxcalc.posting.PostingType;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class BinancePostingsProducer implements PostingsProducer {
 
@@ -43,26 +44,23 @@ public class BinancePostingsProducer implements PostingsProducer {
         return postings;
     }
 
+    /**
+     * We are trying to guess whether it is a SELL or BUY depending on receiveAmount or spendAmount columns values in CSV.
+     */
     private List<Posting> populateTwoPostingsFromTransaction(String[] row, NbpRates nbpRates, BinanceCsvIndexes indexes) {
         var tradeDate = getTradeDate(row, indexes);
         var nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
 
-        PostingType postingType;
-        FiatCurrencyAmount fiatCurrencyAmount;
-        CurrencyAmount receivedCurrencyAmount = CurrencyAmount.parseSpaceDelimited(row[indexes.receiveAmount()]);
-        CurrencyAmount spentCurrencyAmount = CurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
-        if (receivedCurrencyAmount instanceof FiatCurrencyAmount) {
-            postingType = PostingType.SELL;
-            fiatCurrencyAmount = (FiatCurrencyAmount) receivedCurrencyAmount;
-        } else {
-            postingType = PostingType.BUY;
-            fiatCurrencyAmount = (FiatCurrencyAmount) spentCurrencyAmount;
-        }
+        CurrencyAmount receivedCurrAmount = CurrencyAmount.parseSpaceDelimited(row[indexes.receiveAmount()]);
+        CurrencyAmount spentCurrAmount = CurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
+        boolean receivedFiat = receivedCurrAmount instanceof FiatCurrencyAmount;
+
+        var postingType = receivedFiat ? PostingType.SELL : PostingType.BUY;
+        var fiatCurrencyAmount = (FiatCurrencyAmount) (receivedFiat ? receivedCurrAmount : spentCurrAmount);
         Posting tradePosting = createposting(fiatCurrencyAmount, nbpDailyRates, tradeDate, postingType);
 
-        var feeCurrencyAmount = (FiatCurrencyAmount) CurrencyAmount.parseSpaceDelimited(row[indexes.spendAmount()]);
+        var feeCurrencyAmount = (FiatCurrencyAmount) CurrencyAmount.parseSpaceDelimited(row[indexes.fee()]);
         Posting feePosting = createposting(feeCurrencyAmount, nbpDailyRates, tradeDate, PostingType.FEE);
-
         return List.of(tradePosting, feePosting);
     }
 
