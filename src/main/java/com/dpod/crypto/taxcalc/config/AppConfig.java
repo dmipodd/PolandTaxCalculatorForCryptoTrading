@@ -1,20 +1,25 @@
 package com.dpod.crypto.taxcalc.config;
 
-import com.dpod.crypto.taxcalc.process.BinanceTransactionProcessor;
-import com.dpod.crypto.taxcalc.process.BitstampTransactionProcessor;
-import com.dpod.crypto.taxcalc.process.Processor;
+import com.dpod.crypto.taxcalc.process.BinanceTransactionPostingsProducer;
+import com.dpod.crypto.taxcalc.process.BitstampTransactionPostingsProducer;
+import com.dpod.crypto.taxcalc.process.PostingsProducer;
+import com.dpod.crypto.taxcalc.tax.TaxCalculator;
 
 public record AppConfig(
         int year,
         Source source,
-        String nbpRatesFileYearBefore,
+        String nbpRatesFileFromPreviousYear,
         String nbpRatesFile,
         String transactionsFile) {
 
-    public Processor getProcessor() {
+    public PostingsProducer getPostingsProducer() {
         return switch (source) {
-            case BINANCE -> new BinanceTransactionProcessor();
-            case BITSTAMP -> new BitstampTransactionProcessor();
+            case BINANCE -> new BinanceTransactionPostingsProducer();
+            case BITSTAMP -> new BitstampTransactionPostingsProducer();
         };
+    }
+
+    public TaxCalculator getTaxCalculator() {
+        return new TaxCalculator();
     }
 }

@@ -19,10 +19,10 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BitstampTransactionProcessor implements Processor {
+public class BitstampTransactionPostingsProducer implements PostingsProducer {
 
     @Override
-    public List<Posting> generatePostingsFor(NbpRates nbpRates, String filename) {
+    public List<Posting> createPostingsFor(NbpRates nbpRates, String filename) {
         try (var csvReader = CsvUtils.createCsvReader(filename, ',')) {
             String[] headers = csvReader.readNext();
             var csvIndexes = new BitstampCsvIndexes(headers);

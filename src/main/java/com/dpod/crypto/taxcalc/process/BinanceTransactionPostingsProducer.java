@@ -14,12 +14,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BinanceTransactionProcessor implements Processor {
+public class BinanceTransactionPostingsProducer implements PostingsProducer {
 
     public static final int DATE_END_INDEX_EXCLUSIVE = "yyyy-MM-dd".length();
 
     @Override
-    public List<Posting> generatePostingsFor(NbpRates nbpRates, String filename) {
+    public List<Posting> createPostingsFor(NbpRates nbpRates, String filename) {
         try (var csvReader = CsvUtils.createCsvReader(filename, ',')) {
             String[] headers = csvReader.readNext();
             var csvIndexes = new BinanceCsvIndexes(headers);

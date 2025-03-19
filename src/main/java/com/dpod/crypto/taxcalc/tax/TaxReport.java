@@ -10,10 +10,14 @@ import java.util.List;
 import static com.dpod.crypto.taxcalc.util.BigDecimalUtils.isPositive;
 
 /**
- * Class encapsulates the result of tax calculation, tax report. It includes: <br />
- * - a list of all postings for all crypto trades, <br />
- * - tax base (profit or loss), <br />
- * - tax amount.
+ * Class encapsulates the result of tax calculation, i.e. tax report. <br />
+ * It includes:
+ * <ul>
+ *  <li>a list of all postings for all crypto trades, </li>
+ *  <li>revenue and expenses, </li>
+ *  <li>tax base (profit or loss), </li>
+ *  <li>tax amount</li>
+ * </ul>
  */
 public record TaxReport(
         List<Posting> postings,

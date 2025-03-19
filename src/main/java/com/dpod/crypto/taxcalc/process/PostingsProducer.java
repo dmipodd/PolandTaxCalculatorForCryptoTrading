@@ -5,7 +5,7 @@ import com.dpod.crypto.taxcalc.posting.Posting;
 
 import java.util.List;
 
-public interface Processor {
+public interface PostingsProducer {
 
-    List<Posting> generatePostingsFor(NbpRates nbpRates, String filename);
+    List<Posting> createPostingsFor(NbpRates nbpRates, String filename);
 }

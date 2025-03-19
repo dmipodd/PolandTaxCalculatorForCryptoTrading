@@ -15,7 +15,7 @@ import static com.dpod.crypto.taxcalc.posting.Currency.USD;
 import static com.dpod.crypto.taxcalc.posting.PostingType.*;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-class BitstampTransactionProcessorTest {
+class BitstampTransactionPostingsProducerTest {
 
     @Test
     void shouldProducePostingsCorrectly() {
@@ -25,10 +25,10 @@ class BitstampTransactionProcessorTest {
         var nbpRatesFile = "archiwum_tab_a_2024.csv";
         var transactionsFile = "TestTransactionsExport.csv";
         var nbpRates = new NbpRates(nbpRatesFileYearBefore, nbpRatesFile, year);
-        var processor = new BitstampTransactionProcessor();
+        var processor = new BitstampTransactionPostingsProducer();
 
         // when
-        List<Posting> postings = processor.generatePostingsFor(nbpRates, transactionsFile);
+        List<Posting> postings = processor.createPostingsFor(nbpRates, transactionsFile);
 
         // then
         assertThat(postings).containsExactly(

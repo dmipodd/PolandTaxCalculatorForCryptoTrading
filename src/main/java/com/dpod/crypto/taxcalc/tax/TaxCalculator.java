@@ -2,7 +2,6 @@ package com.dpod.crypto.taxcalc.tax;
 
 import com.dpod.crypto.taxcalc.posting.Posting;
 import com.dpod.crypto.taxcalc.util.BigDecimalUtils;
-import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -11,12 +10,11 @@ import java.util.function.Predicate;
 
 import static com.dpod.crypto.taxcalc.util.BigDecimalUtils.isPositive;
 
-@RequiredArgsConstructor
-public class TaxCalculation {
+public class TaxCalculator {
 
     private static final BigDecimal TAX_RATE = new BigDecimal("0.19");
 
-    public static TaxReport calculate(List<Posting> postings) {
+    public TaxReport calculate(List<Posting> postings) {
         var revenue = calculateSumOfAmountPln(postings, BigDecimalUtils::isPositive);
         var expenses = calculateSumOfAmountPln(postings, Predicate.not(BigDecimalUtils::isPositive));
         var taxBase = revenue.add(expenses);
@@ -24,7 +22,7 @@ public class TaxCalculation {
         return new TaxReport(postings, revenue, expenses, taxBase, tax);
     }
 
-    private static BigDecimal calculateSumOfAmountPln(List<Posting> postings, Predicate<BigDecimal> amountPlnPredicate) {
+    private BigDecimal calculateSumOfAmountPln(List<Posting> postings, Predicate<BigDecimal> amountPlnPredicate) {
         BigDecimal taxBase = postings.stream()
                 .map(Posting::getAmountPln)
                 .filter(amountPlnPredicate)
@@ -34,7 +32,7 @@ public class TaxCalculation {
         return taxBase;
     }
 
-    private static BigDecimal calculateTaxFrom(BigDecimal taxBase) {
+    private BigDecimal calculateTaxFrom(BigDecimal taxBase) {
         return isPositive(taxBase)
                 ? taxBase.multiply(TAX_RATE).setScale(2, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;

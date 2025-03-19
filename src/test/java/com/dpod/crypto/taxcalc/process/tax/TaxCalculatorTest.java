@@ -3,7 +3,7 @@ package com.dpod.crypto.taxcalc.process.tax;
 import com.dpod.crypto.taxcalc.posting.Currency;
 import com.dpod.crypto.taxcalc.posting.Posting;
 import com.dpod.crypto.taxcalc.posting.PostingType;
-import com.dpod.crypto.taxcalc.tax.TaxCalculation;
+import com.dpod.crypto.taxcalc.tax.TaxCalculator;
 import com.dpod.crypto.taxcalc.tax.TaxReport;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class TaxCalculationTest {
+class TaxCalculatorTest {
+
+    private final TaxCalculator taxCalculator = new TaxCalculator();
 
     @Test
     void shouldCalculateTaxForProfit() {
@@ -38,7 +40,7 @@ class TaxCalculationTest {
                         .build());
 
         // when
-        TaxReport report = TaxCalculation.calculate(postings);
+        TaxReport report = taxCalculator.calculate(postings);
 
         // then
         assertEquals(new BigDecimal("1400.00"), report.taxBase());
@@ -75,7 +77,7 @@ class TaxCalculationTest {
                         .build());
 
         // when
-        TaxReport report = TaxCalculation.calculate(postings);
+        TaxReport report = taxCalculator.calculate(postings);
 
         // then
         assertEquals(new BigDecimal("-1392.50"), report.taxBase());
