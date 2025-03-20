@@ -23,14 +23,14 @@ public class BitstampPostingsProducer implements PostingsProducer {
                 this::populateTwoPostingsFromTransaction);
     }
 
-    private List<Posting> populateTwoPostingsFromTransaction(String[] row, NbpRates nbpRates, BitstampCsvIndexes indexes) {
-        LocalDate tradeDate = getTradeDate(row, indexes);
-        FiatCurrency currency = FiatCurrency.valueOf(row[indexes.currency()]);
+    private List<Posting> populateTwoPostingsFromTransaction(String[] line, NbpRates nbpRates, BitstampCsvIndexes indexes) {
+        LocalDate tradeDate = getTradeDate(line, indexes);
+        FiatCurrency currency = FiatCurrency.valueOf(line[indexes.currency()]);
         NbpDailyRates nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
 
-        PostingType type = PostingType.fromText(row[indexes.action()]);
+        PostingType type = PostingType.fromText(line[indexes.action()]);
         Posting tradePosting = Posting.builder()
-                .amount(new BigDecimal(row[indexes.amount()]))
+                .amount(new BigDecimal(line[indexes.amount()]))
                 .currency(currency)
                 .rateDate(nbpDailyRates.getDate())
                 .date(tradeDate)
@@ -38,9 +38,9 @@ public class BitstampPostingsProducer implements PostingsProducer {
                 .rate(nbpDailyRates.getRateFor(currency))
                 .build();
 
-        FiatCurrency feeCurrency = FiatCurrency.valueOf(row[indexes.feeCurrency()]);
+        FiatCurrency feeCurrency = FiatCurrency.valueOf(line[indexes.feeCurrency()]);
         Posting feePosting = Posting.builder()
-                .amount(new BigDecimal(row[indexes.fee()]))
+                .amount(new BigDecimal(line[indexes.fee()]))
                 .currency(feeCurrency)
                 .rateDate(nbpDailyRates.getDate())
                 .date(tradeDate)
@@ -53,8 +53,8 @@ public class BitstampPostingsProducer implements PostingsProducer {
     /**
      * CSV contains dateTime in UTC timezone, so we have to covert it to Poland-timezone.
      */
-    private LocalDate getTradeDate(String[] row, BitstampCsvIndexes indexes) {
-        String dateTimeAsString = row[indexes.dateTime()];
+    private LocalDate getTradeDate(String[] line, BitstampCsvIndexes indexes) {
+        String dateTimeAsString = line[indexes.dateTime()];
         ZonedDateTime utcZonedDateTime = ZonedDateTime.parse(dateTimeAsString);
         ZonedDateTime warsawZonedDateTime = utcZonedDateTime.withZoneSameInstant(ZoneId.of("Europe/Warsaw"));
         return warsawZonedDateTime.toLocalDate();

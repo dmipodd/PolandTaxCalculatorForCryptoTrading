@@ -80,17 +80,17 @@ public class NbpRates {
                                           CSVReader csvReader,
                                           NbpCsvIndexes indexes,
                                           Predicate<String> skipRowPredicate) throws IOException, CsvValidationException {
-        String[] row;
-        while ((row = csvReader.readNext()) != null) {
-            String dateAsString = row[indexes.date()];
+        String[] line;
+        while ((line = csvReader.readNext()) != null) {
+            String dateAsString = line[indexes.date()];
 
             if (skipRowPredicate.test(dateAsString)) {
                 continue;
             }
 
             var date = LocalDate.parse(dateAsString, NBP_DATE_FORMAT);
-            var usdRate = row[indexes.usd()];
-            var eurRate = row[indexes.eur()];
+            var usdRate = line[indexes.usd()];
+            var eurRate = line[indexes.eur()];
             var dailyRates = new NbpDailyRates(date, usdRate, eurRate);
             rates.put(date, dailyRates);
         }

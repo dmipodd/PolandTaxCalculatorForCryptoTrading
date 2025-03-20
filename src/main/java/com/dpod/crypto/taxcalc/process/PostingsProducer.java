@@ -25,9 +25,9 @@ public interface PostingsProducer {
             CSVINDEXES indexes = indexesConstructor.apply(headers);
 
             List<Posting> postings = new ArrayList<>();
-            String[] row;
-            while ((row = csvReader.readNext()) != null) {
-                List<Posting> postingsFromLine = postingsFromLinePopulateFunction.apply(row, nbpRates, indexes);
+            String[] line;
+            while ((line = csvReader.readNext()) != null) {
+                List<Posting> postingsFromLine = postingsFromLinePopulateFunction.apply(line, nbpRates, indexes);
                 postings.addAll(postingsFromLine);
             }
 
