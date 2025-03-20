@@ -11,9 +11,9 @@ A detailed step-by-step instruction can be found here:
 https://medium.com/@dzmpdd/polandtaxcalculatorforcryptotrading-a-how-to-guide-a089d6665799
 
 ## 🛑 Disclaimer
-This application is for informational purposes only. While the tool helps with tax calculations, 
-it does not constitute professional accounting or financial advice.
+_This application is for informational purposes only. While the tool helps with tax calculations, 
+it does not constitute professional accounting or financial advice._
 
-The application author (Paddubnik Dzmitry) does not take responsibility for any errors, omissions, or misinterpretations in your tax declaration.
+_The application author (Paddubnik Dzmitry) does not take responsibility for any errors, omissions, or misinterpretations in your tax declaration._
 
-In case of doubts please consult a qualified accountant or tax advisor before submitting your tax report.
+_If you are not 100% sure that you understand how the tax must be calculated, consult a qualified accountant or tax advisor before submitting your tax report._
