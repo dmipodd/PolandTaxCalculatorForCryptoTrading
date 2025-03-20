@@ -1,48 +1,26 @@
 package com.dpod.crypto.taxcalc.process;
 
 import com.dpod.crypto.taxcalc.csv.BitstampCsvIndexes;
-import com.dpod.crypto.taxcalc.csv.CsvUtils;
-import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
 import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
 import com.dpod.crypto.taxcalc.nbp.NbpRates;
 import com.dpod.crypto.taxcalc.posting.FiatCurrency;
 import com.dpod.crypto.taxcalc.posting.Posting;
 import com.dpod.crypto.taxcalc.posting.PostingType;
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvValidationException;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BitstampPostingsProducer implements PostingsProducer {
 
     @Override
     public List<Posting> createPostingsFor(NbpRates nbpRates, String filename) {
-        try (var csvReader = CsvUtils.createCsvReader(filename, ',')) {
-            String[] headers = csvReader.readNext();
-            var csvIndexes = new BitstampCsvIndexes(headers);
-            return populatePostingsFrom(nbpRates, csvReader, csvIndexes);
-        } catch (CsvValidationException | IOException exception) {
-            throw new NbpRatesLoadingException(exception);
-        }
-    }
-
-    // todo this piece of code looks similar to what we have in BinanceTransactionProcessor, consider refactoring
-    private List<Posting> populatePostingsFrom(NbpRates nbpRates,
-                                               CSVReader csvReader,
-                                               BitstampCsvIndexes indexes) throws IOException, CsvValidationException {
-        List<Posting> postings = new ArrayList<>();
-        String[] row;
-        while ((row = csvReader.readNext()) != null) {
-            List<Posting> twoPostings = populateTwoPostingsFromTransaction(row, nbpRates, indexes);
-            postings.addAll(twoPostings);
-        }
-        return postings;
+        return createPostingsFor(nbpRates,
+                filename,
+                BitstampCsvIndexes::new,
+                this::populateTwoPostingsFromTransaction);
     }
 
     private List<Posting> populateTwoPostingsFromTransaction(String[] row, NbpRates nbpRates, BitstampCsvIndexes indexes) {
