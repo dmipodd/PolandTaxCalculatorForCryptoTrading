@@ -28,14 +28,13 @@ public class Posting {
         this.currency = currency;
         this.rate = rate;
         this.rateDate = rateDate;
-
         this.amount = negateAmountDependingOnType(type, amount);
         this.amountPln = rate.multiply(this.amount);
     }
 
     private BigDecimal negateAmountDependingOnType(PostingType type, BigDecimal amount) {
         if (type == PostingType.BUY || type == PostingType.FEE) {
-            amount = amount.multiply(new BigDecimal(-1));
+            amount = amount.negate();
         }
         return amount;
     }
