@@ -7,12 +7,12 @@ public record BinanceCsvIndexes(int dateTime,
                                 int receiveAmount,
                                 int fee) {
 
-    public BinanceCsvIndexes(String[] headerRow) {
+    public BinanceCsvIndexes(String[] headerLine) {
         this(
-                findIndexByName("Date(UTC+1)", headerRow),
-                findIndexByName("Spend Amount", headerRow),
-                findIndexByName("Receive Amount", headerRow),
-                findIndexByName("Fee", headerRow)
+                findIndexByName("Date(UTC+1)", headerLine),
+                findIndexByName("Spend Amount", headerLine),
+                findIndexByName("Receive Amount", headerLine),
+                findIndexByName("Fee", headerLine)
         );
     }
 }

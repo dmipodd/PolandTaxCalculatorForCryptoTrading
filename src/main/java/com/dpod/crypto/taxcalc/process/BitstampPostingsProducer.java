@@ -17,10 +17,10 @@ public class BitstampPostingsProducer implements PostingsProducer {
 
     @Override
     public List<Posting> createPostingsFor(NbpRates nbpRates, String filename) {
-        return createPostingsFor(nbpRates,
+        return createPostingsFor(this::populateTwoPostingsFromTransaction, nbpRates,
                 filename,
-                BitstampCsvIndexes::new,
-                this::populateTwoPostingsFromTransaction);
+                BitstampCsvIndexes::new
+        );
     }
 
     private List<Posting> populateTwoPostingsFromTransaction(String[] line, NbpRates nbpRates, BitstampCsvIndexes indexes) {

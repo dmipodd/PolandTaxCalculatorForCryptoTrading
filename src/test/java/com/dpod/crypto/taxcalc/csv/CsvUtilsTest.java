@@ -13,12 +13,12 @@ class CsvUtilsTest {
 
     @Test
     void shouldFindIndexByName() {
-        String[] headerRow = {"Name", "Age", "City"};
+        String[] headerLine = {"Name", "Age", "City"};
 
-        assertEquals(0, CsvUtils.findIndexByName("Name", headerRow));
-        assertEquals(1, CsvUtils.findIndexByName("Age", headerRow));
-        assertEquals(2, CsvUtils.findIndexByName("City", headerRow));
-        assertThrows(IllegalArgumentException.class, () -> CsvUtils.findIndexByName("Country", headerRow));
+        assertEquals(0, CsvUtils.findIndexByName("Name", headerLine));
+        assertEquals(1, CsvUtils.findIndexByName("Age", headerLine));
+        assertEquals(2, CsvUtils.findIndexByName("City", headerLine));
+        assertThrows(IllegalArgumentException.class, () -> CsvUtils.findIndexByName("Country", headerLine));
     }
 
     @Test

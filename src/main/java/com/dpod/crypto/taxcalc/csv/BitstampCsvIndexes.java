@@ -9,14 +9,14 @@ public record BitstampCsvIndexes(int dateTime,
                                  int fee,
                                  int feeCurrency) {
 
-    public BitstampCsvIndexes(String[] headerRow) {
+    public BitstampCsvIndexes(String[] headerLine) {
         this(
-                findIndexByName("Datetime", headerRow),
-                findIndexByName("Subtype", headerRow),
-                findIndexByName("Value", headerRow),
-                findIndexByName("Value currency", headerRow),
-                findIndexByName("Fee", headerRow),
-                findIndexByName("Fee currency", headerRow)
+                findIndexByName("Datetime", headerLine),
+                findIndexByName("Subtype", headerLine),
+                findIndexByName("Value", headerLine),
+                findIndexByName("Value currency", headerLine),
+                findIndexByName("Fee", headerLine),
+                findIndexByName("Fee currency", headerLine)
         );
     }
 }

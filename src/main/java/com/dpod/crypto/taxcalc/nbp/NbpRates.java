@@ -1,8 +1,8 @@
 package com.dpod.crypto.taxcalc.nbp;
 
 import com.dpod.crypto.taxcalc.csv.CsvUtils;
-import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
 import com.dpod.crypto.taxcalc.csv.NbpCsvIndexes;
+import com.dpod.crypto.taxcalc.exception.NbpRatesLoadingException;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 public class NbpRates {
 
     private static final DateTimeFormatter NBP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
-    private static final int PREVIOUS_YEAR_DECEMBER_DATE_TO_READ_FROM = 15;
+    private static final String MID_DECEMBER_DATE = "1215";
 
     private final LinkedHashMap<LocalDate, NbpDailyRates> rates;
     private final int year;
@@ -104,8 +104,7 @@ public class NbpRates {
 
     private boolean dateIsBeforeMidDecemberOfPreviousYear(String dateAsString) {
         var previousYear = String.valueOf(year - 1);
-        var december = "12";
-        return dateAsString.compareTo(previousYear + december + PREVIOUS_YEAR_DECEMBER_DATE_TO_READ_FROM) < 0;
+        return dateAsString.compareTo(previousYear + MID_DECEMBER_DATE) < 0;
     }
 
     private boolean notValidDate(String dateAsString) {

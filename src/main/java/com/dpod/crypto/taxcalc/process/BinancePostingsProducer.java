@@ -3,7 +3,6 @@ package com.dpod.crypto.taxcalc.process;
 import com.dpod.crypto.taxcalc.csv.BinanceCsvIndexes;
 import com.dpod.crypto.taxcalc.nbp.NbpDailyRates;
 import com.dpod.crypto.taxcalc.nbp.NbpRates;
-import com.dpod.crypto.taxcalc.posting.CurrencyAmount;
 import com.dpod.crypto.taxcalc.posting.FiatCurrencyAmount;
 import com.dpod.crypto.taxcalc.posting.Posting;
 import com.dpod.crypto.taxcalc.posting.PostingType;
@@ -17,10 +16,10 @@ public class BinancePostingsProducer implements PostingsProducer {
 
     @Override
     public List<Posting> createPostingsFor(NbpRates nbpRates, String filename) {
-        return createPostingsFor(nbpRates,
+        return createPostingsFor(this::populateTwoPostingsFromTransaction, nbpRates,
                 filename,
-                BinanceCsvIndexes::new,
-                this::populateTwoPostingsFromTransaction);
+                BinanceCsvIndexes::new
+        );
     }
 
     /**
@@ -29,18 +28,29 @@ public class BinancePostingsProducer implements PostingsProducer {
     private List<Posting> populateTwoPostingsFromTransaction(String[] line, NbpRates nbpRates, BinanceCsvIndexes indexes) {
         var tradeDate = getTradeDate(line, indexes);
         var nbpDailyRates = nbpRates.findRateForClosestBusinessDayPriorTo(tradeDate);
-
-        CurrencyAmount receivedCurrAmount = CurrencyAmount.parseSpaceDelimited(line[indexes.receiveAmount()]);
-        CurrencyAmount spentCurrAmount = CurrencyAmount.parseSpaceDelimited(line[indexes.spendAmount()]);
-        boolean receivedFiat = receivedCurrAmount instanceof FiatCurrencyAmount;
-
-        var postingType = receivedFiat ? PostingType.SELL : PostingType.BUY;
-        var fiatCurrencyAmount = (FiatCurrencyAmount) (receivedFiat ? receivedCurrAmount : spentCurrAmount);
-        Posting tradePosting = createPosting(fiatCurrencyAmount, nbpDailyRates, tradeDate, postingType);
-
-        var feeCurrencyAmount = (FiatCurrencyAmount) CurrencyAmount.parseSpaceDelimited(line[indexes.fee()]);
-        Posting feePosting = createPosting(feeCurrencyAmount, nbpDailyRates, tradeDate, PostingType.FEE);
+        var tradePosting = createTradePosting(line, indexes, tradeDate, nbpDailyRates);
+        var feePosting = createFeePosting(line, indexes, tradeDate, nbpDailyRates);
         return List.of(tradePosting, feePosting);
+    }
+
+    private Posting createTradePosting(String[] line, BinanceCsvIndexes indexes, LocalDate tradeDate, NbpDailyRates nbpDailyRates) {
+        // let's assume that it is SELL-transaction,
+        // meaning receiveAmount column contains a fiat currency
+        var postingType = PostingType.SELL;
+        var currencyAmount = FiatCurrencyAmount.parseSpaceDelimited(line[indexes.receiveAmount()]);
+
+        if (currencyAmount == null) {
+            // assumption is wrong, it is BUY transaction,
+            // so spendAmount column must contain a fiat currency
+            postingType = PostingType.BUY;
+            currencyAmount = FiatCurrencyAmount.parseSpaceDelimitedRequired(line[indexes.spendAmount()]);
+        }
+        return createPosting(currencyAmount, nbpDailyRates, tradeDate, postingType);
+    }
+
+    private Posting createFeePosting(String[] line, BinanceCsvIndexes indexes, LocalDate tradeDate, NbpDailyRates nbpDailyRates) {
+        var feeCurrencyAmount = FiatCurrencyAmount.parseSpaceDelimitedRequired(line[indexes.fee()]);
+        return createPosting(feeCurrencyAmount, nbpDailyRates, tradeDate, PostingType.FEE);
     }
 
     private Posting createPosting(FiatCurrencyAmount currencyAmount, NbpDailyRates rates, LocalDate tradeDate, PostingType postingType) {

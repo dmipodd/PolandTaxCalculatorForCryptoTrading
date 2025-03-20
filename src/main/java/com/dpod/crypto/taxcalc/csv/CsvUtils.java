@@ -14,9 +14,9 @@ import static com.dpod.crypto.taxcalc.util.FileUtils.opeInputStreamFor;
 @UtilityClass
 public class CsvUtils {
 
-    public static int findIndexByName(String columnName, String[] csvHeaderRow) {
-        return IntStream.range(0, csvHeaderRow.length)
-                .filter(i -> columnName.equals(csvHeaderRow[i]))
+    public static int findIndexByName(String columnName, String[] headerLine) {
+        return IntStream.range(0, headerLine.length)
+                .filter(i -> columnName.equals(headerLine[i]))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("CSV file doesn't contain column " + columnName));
     }

@@ -7,7 +7,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CurrencyAmountTest {
 
@@ -18,12 +20,10 @@ class CurrencyAmountTest {
             "       0.1 USD ,USD,0.1"
     })
     void shouldParseFiatCurrencyAmount(String input, FiatCurrency expectedCurrency, BigDecimal expected) {
-        CurrencyAmount result = CurrencyAmount.parseSpaceDelimited(input);
+        FiatCurrencyAmount result = FiatCurrencyAmount.parseSpaceDelimitedRequired(input);
 
-        assertInstanceOf(FiatCurrencyAmount.class, result);
-        FiatCurrencyAmount fiat = (FiatCurrencyAmount) result;
-        assertEquals(expectedCurrency, fiat.currency());
-        assertEquals(expected, fiat.amount());
+        assertEquals(expectedCurrency, result.currency());
+        assertEquals(expected, result.amount());
     }
 
     @ParameterizedTest
@@ -32,10 +32,9 @@ class CurrencyAmountTest {
             "0.0000001 ETH",
             "    0.0000001 SOL   "
     })
-    void shouldParseCryptoCurrencyAmount(String input) {
-        CurrencyAmount result = CurrencyAmount.parseSpaceDelimited(input);
-        assertInstanceOf(CryptoCurrencyAmount.class, result);
-        assertNotNull(result);
+    void shouldParseNonFiatCurrencyAmount(String input) {
+        assertThat(FiatCurrencyAmount.parseSpaceDelimited(input)).isNull();
+        assertThrows(NullPointerException.class, () -> FiatCurrencyAmount.parseSpaceDelimitedRequired(input));
     }
 
     @ParameterizedTest
@@ -46,7 +45,7 @@ class CurrencyAmountTest {
             "0.05 BTC 123",
     })
     @NullAndEmptySource
-    void parseSpaceDelimited_NullInput_ShouldThrowException(String str) {
-        assertThrows(IllegalArgumentException.class, () -> CurrencyAmount.parseSpaceDelimited(str));
+    void shouldThrowExceptionIfInputStringHasInvalidFormat(String str) {
+        assertThrows(IllegalArgumentException.class, () -> FiatCurrencyAmount.parseSpaceDelimited(str));
     }
 }
